@@ -2,6 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/id_menu_add_note_auto"
+        android:icon="@drawable/ic_menu_voice"
+        android:title="@string/add_note"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/id_menu_add_note"
         android:icon="@drawable/ic_menu_addnote"
         android:title="@string/add_note"

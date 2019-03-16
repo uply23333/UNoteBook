@@ -26,6 +26,16 @@ import com.example.yangtianrui.notebook.config.Constants;
 import com.example.yangtianrui.notebook.fragment.AllNotesFragment;
 import com.example.yangtianrui.notebook.fragment.SearchNoteFragment;
 import com.example.yangtianrui.notebook.fragment.SettingFragment;
+import com.example.yangtianrui.notebook.util.JsonParser;
+import com.iflytek.cloud.InitListener;
+import com.iflytek.cloud.RecognizerResult;
+import com.iflytek.cloud.SpeechError;
+import com.iflytek.cloud.ui.RecognizerDialog;
+import com.iflytek.cloud.ui.RecognizerDialogListener;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import cn.bmob.v3.BmobUser;
 
@@ -115,6 +125,35 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.id_menu_add_note_auto:
+                RecognizerDialog mDialog = new RecognizerDialog(this, new InitListener() {
+                    @Override
+                    public void onInit(int i) {
+
+                    }
+                });
+                final List<String> contents = new ArrayList<>();
+                mDialog.setListener( new RecognizerDialogListener() {
+                    @Override
+                    public void onResult(RecognizerResult recognizerResult, boolean b) {
+                        if (recognizerResult != null) {
+                            contents.add(JsonParser.parseIatResult(recognizerResult.getResultString()));
+                        }
+                        if (b) { // 录音结束
+                            Intent intent = new Intent(MainActivity.this, NoteDetailActivity.class);
+                            intent.putExtra("SPEECH_CONTENT", contents.stream().collect(Collectors.joining("\n")));
+                            startActivity(intent);
+                        }
+                    }
+
+                    @Override
+                    public void onError(SpeechError speechError) {
+                        Toast.makeText(MainActivity.this, speechError.getErrorDescription(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                mDialog.show();
+                break;
             case R.id.id_menu_add_note:
                 Intent intent = new Intent(this, NoteDetailActivity.class);
                 startActivity(intent);

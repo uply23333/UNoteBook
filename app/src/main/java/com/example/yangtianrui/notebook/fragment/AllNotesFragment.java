@@ -241,7 +241,7 @@ public class AllNotesFragment extends Fragment implements AdapterView.OnItemClic
                     mSyncNotes.clear();
                     // 向服务器下载本机没有的数据
                     BmobQuery<Note> bmobQuery = new BmobQuery<>();
-                    bmobQuery.addWhereEqualTo("userName", BmobUser.getCurrentUser(BmobUser.class));
+                    bmobQuery.addWhereEqualTo("userName", BmobUser.getCurrentUser(BmobUser.class).getUsername());
                     bmobQuery.setLimit(50); // 返回50条数据
                     // 从服务器获取数据
                     bmobQuery.findObjects(new FindListener<Note>() {

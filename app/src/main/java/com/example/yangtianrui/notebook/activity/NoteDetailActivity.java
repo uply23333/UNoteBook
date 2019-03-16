@@ -18,6 +18,8 @@ import com.example.yangtianrui.notebook.db.NoteDao;
 import com.example.yangtianrui.notebook.util.TextFormatUtil;
 import com.example.yangtianrui.notebook.widget.LineEditText;
 
+import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -65,6 +67,10 @@ public class NoteDetailActivity extends AppCompatActivity implements View.OnClic
                 mNote.setContent(mCursor.getString(mCursor.getColumnIndex("content")));
                 mNote.setCreateTime(mCursor.getString(mCursor.getColumnIndex("create_time")));
             }
+        }
+        String content = intent.getStringExtra("SPEECH_CONTENT");
+        if (content != null) {
+            mNote.setContent(content);
         }
     }
 

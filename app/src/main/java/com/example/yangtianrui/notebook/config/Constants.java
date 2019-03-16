@@ -10,6 +10,9 @@ public class Constants {
     // Bmob 数据服务API
     public static final String BMOB_API_KEY = "de9f1dd7ed265fc3e38ab190a2bd117c";
 
+    // xy 数据服务API
+    public static final String XUNFEI_API_KEY = "5c8d55cb";
+
     // 应用包名
     public static final String PACKAGE_NAME = "com.example.yangtianrui.notebook";
 

@@ -3,9 +3,10 @@ package com.example.yangtianrui.notebook;
 import android.app.Application;
 
 import com.example.yangtianrui.notebook.config.Constants;
+import com.iflytek.cloud.SpeechConstant;
+import com.iflytek.cloud.SpeechUtility;
 
 import cn.bmob.v3.Bmob;
-import cn.bmob.v3.BmobBatch;
 import cn.bmob.v3.BmobUser;
 
 
@@ -26,8 +27,8 @@ public class UplyNoteBook extends Application {
         super.onCreate();
         // 初始化Bmob
         Bmob.initialize(this, Constants.BMOB_API_KEY);
-
         user = BmobUser.getCurrentUser(BmobUser.class);
+        SpeechUtility.createUtility(this, SpeechConstant.APPID +"=" + Constants.XUNFEI_API_KEY);
     }
 
     public BmobUser getUser() {
