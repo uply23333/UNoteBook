@@ -17,8 +17,12 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import cn.bmob.v3.BmobBatch;
 import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.datatype.BatchResult;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.QueryListListener;
 import cn.bmob.v3.listener.SaveListener;
 
 /**
@@ -69,7 +73,7 @@ public class AutoSyncService extends Service {
                     note.setTitle(cursor.getString(cursor.getColumnIndex("title")));
                     note.setContent(cursor.getString(cursor.getColumnIndex("content")));
                     note.setCreateTime(cursor.getString(cursor.getColumnIndex("create_time")));
-//                    note.setUserName(BmobUser.getCurrentUser(AutoSyncService.this).getUsername());
+                    note.setUserName(BmobUser.getCurrentUser(BmobUser.class).getUsername());
                     mNotes.add(note);
                     // 标记为已同步
                     ContentValues values = new ContentValues();
@@ -78,23 +82,30 @@ public class AutoSyncService extends Service {
                 }
                 cursor.close();
                 // 向服务器发送数据
-//                new BmobObject().insertBatch(AutoSyncService.this, mNotes, new SaveListener() {
-//                    @Override
-//                    public void onSuccess() {
-//                        Intent intent = new Intent();
-//                        intent.setAction(Constants.SYNC_BROADCAST_ACTION);
-//                        intent.putExtra(SEND_SYNC_STATE, "自动同步完成");
-//                        sendBroadcast(intent);
-//                    }
-//
-//                    @Override
-//                    public void onFailure(int i, String s) {
-//                        Intent intent = new Intent();
-//                        intent.setAction(Constants.SYNC_BROADCAST_ACTION);
-//                        intent.putExtra(SEND_SYNC_STATE, s);
-//                        sendBroadcast(intent);
-//                    }
-//                });
+                new BmobBatch().insertBatch(mNotes).doBatch(new QueryListListener<BatchResult>() {
+                    @Override
+                    public void done(List<BatchResult> list, BmobException e) {
+                        if (e == null) {
+                            int count = 0;
+                            for (int i = 0; i < list.size(); i++) {
+                                BatchResult result = list.get(i);
+                                BmobException ex = result.getError();
+                                if (ex != null) {
+                                    count++;
+                                }
+                            }
+                            Intent intent = new Intent();
+                            intent.setAction(Constants.SYNC_BROADCAST_ACTION);
+                            intent.putExtra(SEND_SYNC_STATE, "更新成功" + count + "条");
+                            sendBroadcast(intent);
+                        } else {
+                            Intent intent = new Intent();
+                            intent.setAction(Constants.SYNC_BROADCAST_ACTION);
+                            intent.putExtra(SEND_SYNC_STATE, "失败：" + e.getMessage() + "," + e.getErrorCode());
+                            sendBroadcast(intent);
+                        }
+                    }
+                });
             }
         }
     }

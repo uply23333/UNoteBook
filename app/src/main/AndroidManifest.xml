@@ -34,6 +34,11 @@
             android:name=".db.NoteProvider"
             android:authorities="com.terry.NoteBook" />
 
+        <provider
+            android:name="cn.bmob.v3.util.BmobContentProvider"
+            android:authorities="com.uply.notebook.BmobContentProvider">
+        </provider>
+
         <activity android:name=".activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

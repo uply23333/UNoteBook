@@ -42,10 +42,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 
+import cn.bmob.v3.BmobBatch;
 import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.datatype.BatchResult;
+import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.QueryListListener;
 import cn.bmob.v3.listener.SaveListener;
 
 /**
@@ -230,55 +234,44 @@ public class AllNotesFragment extends Fragment implements AdapterView.OnItemClic
                 }
             }
             cursor.close();
-            // 批量向服务器上传数据数据
-//            new BmobObject().insertBatch(getActivity(), mSyncNotes, new SaveListener() {
-//                @Override
-//                public void onSuccess() {
-//
-//                    mSyncNotes.clear();
-//                    // 向服务器下载本机没有的数据
-//                    BmobQuery<Note> bmobQuery = new BmobQuery<>();
-//                    bmobQuery.addWhereEqualTo("userName", BmobUser.getCurrentUser(getActivity()).getUsername());
-//                    bmobQuery.setLimit(50); // 返回50条数据
-//                    // 从服务器获取数据
-//                    bmobQuery.findObjects(getActivity(), new FindListener<Note>() {
-//                        @Override
-//                        public void onSuccess(List<Note> list) {
-//                            // 获取所有没有在服务器中的数据
-//                            list.removeAll(mAllNotes);
-////                            Log.v("LOG", "allNote:" + mAllNotes);
-////                            Log.v("LOG", "List: " + list + "");
-//                            ContentResolver resolver = getActivity().getContentResolver();
-//                            // 将此数据写入数据库中
-//                            for (Note note : list) {
-//                                ContentValues values = new ContentValues();
-//                                values.put("title", note.getTitle());
-//                                values.put("content", note.getContent());
-//                                values.put("create_time", note.getCreateTime());
-//                                values.put("is_sync", "true");
-//                                resolver.insert(uri, values);
-//                            }
-//                            mAllNotes.clear();
-//                            mSrlRefresh.setRefreshing(false);
-//                            // 通知UI更新界面
-//                            getLoaderManager().restartLoader(0, null, AllNotesFragment.this);
-//                            Snackbar.make(root, "同步完成", Snackbar.LENGTH_SHORT).show();
-//                        }
-//
-//                        @Override
-//                        public void onError(int i, String s) {
-//                            Snackbar.make(root, s, Snackbar.LENGTH_SHORT).show();
-//                        }
-//                    });
-//                }
-//
-//                @Override
-//                public void onFailure(int i, String s) {
-//                    mSrlRefresh.setRefreshing(false);
-//                    Toast.makeText(getActivity(), "更新失败 " + s, Toast.LENGTH_SHORT).show();
-//                }
-//            });
-
+//             批量向服务器上传数据数据
+            new BmobBatch().insertBatch(mSyncNotes).doBatch(new QueryListListener<BatchResult>() {
+                @Override
+                public void done(List<BatchResult> list, BmobException e) {
+                    mSyncNotes.clear();
+                    // 向服务器下载本机没有的数据
+                    BmobQuery<Note> bmobQuery = new BmobQuery<>();
+                    bmobQuery.addWhereEqualTo("userName", BmobUser.getCurrentUser(BmobUser.class));
+                    bmobQuery.setLimit(50); // 返回50条数据
+                    // 从服务器获取数据
+                    bmobQuery.findObjects(new FindListener<Note>() {
+                        @Override
+                        public void done(List<Note> list, BmobException e) {
+                            if (e == null) {
+                                // 获取所有没有在服务器中的数据
+                                list.removeAll(mAllNotes);
+                                ContentResolver resolver = getActivity().getContentResolver();
+                                // 将此数据写入数据库中
+                                for (Note note : list) {
+                                    ContentValues values = new ContentValues();
+                                    values.put("title", note.getTitle());
+                                    values.put("content", note.getContent());
+                                    values.put("create_time", note.getCreateTime());
+                                    values.put("is_sync", "true");
+                                    resolver.insert(uri, values);
+                                }
+                                mAllNotes.clear();
+                                mSrlRefresh.setRefreshing(false);
+                                // 通知UI更新界面
+                                getLoaderManager().restartLoader(0, null, AllNotesFragment.this);
+                                Snackbar.make(root, "同步完成", Snackbar.LENGTH_SHORT).show();
+                            } else {
+                                Snackbar.make(root, e.getErrorCode() + "," + e.getMessage(), Snackbar.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                }
+            });
         }
     }
 
