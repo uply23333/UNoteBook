@@ -37,7 +37,7 @@
             android:layout_height="50dp"
             android:layout_gravity="right"
             android:padding="10dp"
-            android:text="@string/modify_note" />
+            android:text="@string/ModifyNote" />
     </LinearLayout>
 
 </LinearLayout>

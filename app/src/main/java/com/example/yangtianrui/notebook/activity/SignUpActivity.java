@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -12,12 +13,15 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.yangtianrui.notebook.R;
 import com.example.yangtianrui.notebook.service.UserService;
+import com.example.yangtianrui.notebook.util.MyTextUtils;
 
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
@@ -26,19 +30,20 @@ import cn.bmob.v3.listener.SaveListener;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity {
+public class SignUpActivity extends AppCompatActivity {
 
     // UI references.
     private EditText mEtUsername;
     private EditText mEtPwd;
+    private EditText mEtVerify;
     private View mProgressView;
     private View mLoginFormView;
-    private Button mBtnLogin;
+    private Button mBtnSignUp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_signup);
         initView();
         initEvent();
     }
@@ -48,11 +53,12 @@ public class LoginActivity extends AppCompatActivity {
      * 初始化组件
      */
     private void initView() {
-        mEtPwd = findViewById(R.id.id_et_password);
-        mEtUsername = findViewById(R.id.id_et_username);
-        mBtnLogin = findViewById(R.id.id_btn_login);
-        mProgressView = findViewById(R.id.id_pb_loading);
-        mLoginFormView = findViewById(R.id.id_lv_login_form);
+        mEtPwd = findViewById(R.id.id_et_signup_password);
+        mEtUsername = findViewById(R.id.id_et_signup_username);
+        mBtnSignUp = findViewById(R.id.id_btn_signup);
+        mProgressView = findViewById(R.id.id_pb_signup_loading);
+        mLoginFormView = findViewById(R.id.id_lv_signup_form);
+        mEtVerify = findViewById(R.id.id_et_signup_verify);
     }
 
     /**
@@ -62,70 +68,83 @@ public class LoginActivity extends AppCompatActivity {
         mEtPwd.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.integer.action_sign_in) {
-                    attemptLogin();
+                if (id == R.integer.action_sign_up || id == EditorInfo.IME_NULL) {
+                    attemptSignUp();
                     return true;
                 }
                 return false;
             }
         });
 
-        mBtnLogin.setOnClickListener(new OnClickListener() {
+        mBtnSignUp.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                attemptSignUp();
             }
         });
     }
 
-    /**
-     * 接收登陆的结果,并判断错误
-     */
-    private void attemptLogin() {
+    private void attemptSignUp() {
+        // Reset errors.
         mEtUsername.setError(null);
         mEtPwd.setError(null);
+        mEtVerify.setError(null);
 
+        // Store values at the time of the login attempt.
         String userName = mEtUsername.getText().toString();
         String password = mEtPwd.getText().toString();
+        String verify = mEtVerify.getText().toString();
 
-        boolean success = true;
-        View view = null;
+        boolean cancel = false;
+        View focusView = null;
 
         // 检查用户名
         if (TextUtils.isEmpty(userName)) {
             mEtUsername.setError("用户名是必填项");
-            view = mEtUsername;
-            success = false;
-        } else if (!isUserNameValid(userName)) {
+            focusView = mEtUsername;
+            cancel = true;
+        } else if (!MyTextUtils.isUserNameValid(userName)) {
             mEtUsername.setError("用户名必须大于4位");
-            view = mEtUsername;
-            success = false;
-        }
-        // 检查密码
-        if (TextUtils.isEmpty(password) || !isPasswordValid(password)) {
-            mEtPwd.setError("密码必须大于5位");
-            view = mEtPwd;
-            success = false;
+            focusView = mEtUsername;
+            cancel = true;
         }
 
-        if (success) {
-            showProgress(true);
-            UserService.login(userName, password, this);
+        // 检查密码
+        if (TextUtils.isEmpty(password) || !MyTextUtils.isPasswordValid(password)) {
+            mEtPwd.setError("密码必须大于5位");
+            focusView = mEtPwd;
+            cancel = true;
+        }
+
+        // 检查两次密码是否一致
+        if (TextUtils.isEmpty(verify) || !verify.equals(password)) {
+            mEtVerify.setError("两次输入密码不一致");
+            focusView = mEtVerify;
+            cancel = true;
+        }
+
+
+
+        if (cancel) {
+            focusView.requestFocus();
         } else {
-            view.requestFocus();
+            showProgress(true);
+            UserService.signUp(userName, password, SignUpActivity.this);
         }
     }
 
-    public final class LoginListener extends SaveListener<BmobUser>  {
+    public class SignUpCallBack extends SaveListener<BmobUser> {
         @Override
         public void done(BmobUser bmobUser, BmobException e) {
             if (e == null) {
-                Snackbar bar = Snackbar.make(mLoginFormView, "登陆成功,欢迎回来!", Snackbar.LENGTH_SHORT);
-                final Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                Snackbar bar = Snackbar.make(mLoginFormView, "注册成功！",
+                        Snackbar.LENGTH_SHORT);
                 bar.addCallback(new Snackbar.Callback() {
                     @Override
                     public void onDismissed(Snackbar snackbar, int event) {
                         super.onDismissed(snackbar, event);
+                        Intent intent = new Intent(SignUpActivity.this,
+                                LoginActivity.class);
                         startActivity(intent);
                         finish();
                     }
@@ -133,24 +152,10 @@ public class LoginActivity extends AppCompatActivity {
                 bar.show();
             } else {
                 showProgress(false);
-                Snackbar.make(mLoginFormView, "登录失败：" + e.getMessage(),
+                Snackbar.make(mLoginFormView, "注册失败：" + e.getMessage(),
                         Snackbar.LENGTH_SHORT).show();
             }
         }
-    }
-
-    /**
-     * 用户名必须大于4位
-     */
-    private boolean isUserNameValid(String userName) {
-        return userName.length() >= 4;
-    }
-
-    /**
-     * 密码必须大于5位
-     */
-    private boolean isPasswordValid(String password) {
-        return password.length() >= 5;
     }
 
     /**
@@ -187,21 +192,6 @@ public class LoginActivity extends AppCompatActivity {
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
-    }
-
-
-    /**
-     * 点击此按钮时,注册新用户
-     */
-    public void signUp(View view) {
-        Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
-    @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-
     }
 }
 

@@ -21,11 +21,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.yangtianrui.notebook.R;
+import com.example.yangtianrui.notebook.UplyNoteBook;
+import com.example.yangtianrui.notebook.config.Constants;
 import com.example.yangtianrui.notebook.fragment.AllNotesFragment;
 import com.example.yangtianrui.notebook.fragment.SearchNoteFragment;
 import com.example.yangtianrui.notebook.fragment.SettingFragment;
 
 import cn.bmob.v3.BmobUser;
+
+
 
 public class MainActivity extends AppCompatActivity
         implements Toolbar.OnMenuItemClickListener, AdapterView.OnItemClickListener, NavigationView.OnNavigationItemSelectedListener {
@@ -54,7 +58,7 @@ public class MainActivity extends AppCompatActivity
         // 获取配置信息
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         IS_SYNC = pref.getBoolean("auto_sync", false);
-        mUserName = getIntent().getStringExtra(SplashActivity.SEND_USER_NAME);
+        mUserName = ((UplyNoteBook)getApplication()).getUser().getUsername();
         mFragments[0] = new AllNotesFragment();
         mFragments[1] = new SearchNoteFragment();
         mFragments[2] = new SettingFragment();
@@ -70,18 +74,17 @@ public class MainActivity extends AppCompatActivity
 
 
     private void initView() {
-        mToolbar = (Toolbar) findViewById(R.id.id_toolbar);
-        mToolbar.setTitle("Yi Note");
+        mToolbar = findViewById(R.id.id_toolbar);
         setSupportActionBar(mToolbar);
         mToolbar.setOnMenuItemClickListener(this);
-        mDlLayout = (DrawerLayout) findViewById(R.id.id_dl_main_layout);
-        mFlContent = (FrameLayout) findViewById(R.id.id_fl_main_content);
-        mNvMenu = (NavigationView) findViewById(R.id.id_nav_menu);
+        mDlLayout = findViewById(R.id.id_dl_main_layout);
+        mFlContent = findViewById(R.id.id_fl_main_content);
+        mNvMenu =  findViewById(R.id.id_nav_menu);
         // 获取HeaderView
         mHeaderView = mNvMenu.getHeaderView(0);
-        mTvUserName = (TextView) mHeaderView.findViewById(R.id.id_tv_username);
+        mTvUserName = mHeaderView.findViewById(R.id.id_tv_username);
         mNvMenu.setNavigationItemSelectedListener(this);
-        mToggle = new ActionBarDrawerToggle(this, mDlLayout, mToolbar, R.string.app_name, R.string.app_name);
+        mToggle = new ActionBarDrawerToggle(this, mDlLayout, mToolbar, R.string.AppName, R.string.AppName);
         mToggle.syncState();
         mDlLayout.setDrawerListener(mToggle);
         mTvUserName.setText(mUserName);
@@ -164,7 +167,7 @@ public class MainActivity extends AppCompatActivity
      * 退出当前用户
      */
     private void logout() {
-        BmobUser.logOut(this);
+        BmobUser.logOut();
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();

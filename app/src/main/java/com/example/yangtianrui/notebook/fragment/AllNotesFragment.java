@@ -27,12 +27,13 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.yangtianrui.notebook.R;
+import com.example.yangtianrui.notebook.UplyNoteBook;
 import com.example.yangtianrui.notebook.activity.MainActivity;
 import com.example.yangtianrui.notebook.activity.NoteDetailActivity;
 import com.example.yangtianrui.notebook.adapter.ShowNoteAdapter;
 import com.example.yangtianrui.notebook.bean.Note;
 import com.example.yangtianrui.notebook.config.Constants;
-import com.example.yangtianrui.notebook.db.NoteDAO;
+import com.example.yangtianrui.notebook.db.NoteDao;
 import com.example.yangtianrui.notebook.service.AutoSyncService;
 
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ import cn.bmob.v3.listener.SaveListener;
  * 显示所有Note,使用Loader实现异步加载
  */
 public class AllNotesFragment extends Fragment implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor>, SwipeRefreshLayout.OnRefreshListener {
-    private NoteDAO mNoteDAO;
+    private NoteDao mNoteDao;
     private ListView mLvNotes;
     private SwipeRefreshLayout mSrlRefresh;
     private CursorAdapter mAdapter;
@@ -74,9 +75,9 @@ public class AllNotesFragment extends Fragment implements AdapterView.OnItemClic
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mNoteDAO = new NoteDAO(getActivity());
+        mNoteDao = new NoteDao(getActivity());
         // 查询所有行
-        mCursor = mNoteDAO.queryNote(null, null);
+        mCursor = mNoteDao.queryNote(null, null);
         // 获取同步信息,启动Service的计划任务
         if (MainActivity.IS_SYNC) {
             Intent intent = new Intent(getActivity(), AutoSyncService.class);
@@ -98,7 +99,7 @@ public class AllNotesFragment extends Fragment implements AdapterView.OnItemClic
         mLvNotes = (ListView) root.findViewById(R.id.id_lv_all_note);
 
         mSrlRefresh = (SwipeRefreshLayout) root.findViewById(R.id.id_srl_refresh);
-        mSrlRefresh.setColorSchemeColors(R.color.colorPrimary);
+        mSrlRefresh.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
         mSrlRefresh.setSize(SwipeRefreshLayout.DEFAULT);
         mSrlRefresh.setProgressViewEndTarget(true, 200);
         // 在下拉刷新时同步数据
@@ -118,7 +119,7 @@ public class AllNotesFragment extends Fragment implements AdapterView.OnItemClic
     @Override
     public void onResume() {
         super.onResume();
-        mCursor = mNoteDAO.queryNote(null, null);
+        mCursor = mNoteDao.queryNote(null, null);
         getLoaderManager().restartLoader(0, null, this);
     }
 
@@ -154,7 +155,7 @@ public class AllNotesFragment extends Fragment implements AdapterView.OnItemClic
                 break;
             case CONTEXT_DELETE_ORDER: // 删除操作
                 //Toast.makeText(getActivity(),"DELETE",Toast.LENGTH_SHORT).show();
-                mNoteDAO.deleteNote("_id=?", new String[]{itemID + ""});
+                mNoteDao.deleteNote("_id=?", new String[]{itemID + ""});
                 getLoaderManager().restartLoader(0, null, this);
                 break;
         }
@@ -219,7 +220,8 @@ public class AllNotesFragment extends Fragment implements AdapterView.OnItemClic
                 // 将数据库中所有数据添加到集合中
                 mAllNotes.add(note);
                 // 获取当前用户
-                note.setUserName(BmobUser.getCurrentUser(getActivity()).getUsername());
+                BmobUser user = ((UplyNoteBook)getActivity().getApplication()).getUser();
+                note.setUserName(user.getUsername());
                 if (cursor.getString(cursor.getColumnIndex("is_sync")).equals("false")) {
                     ContentValues values = new ContentValues();
                     values.put("is_sync", "true");
@@ -229,53 +231,53 @@ public class AllNotesFragment extends Fragment implements AdapterView.OnItemClic
             }
             cursor.close();
             // 批量向服务器上传数据数据
-            new BmobObject().insertBatch(getActivity(), mSyncNotes, new SaveListener() {
-                @Override
-                public void onSuccess() {
-
-                    mSyncNotes.clear();
-                    // 向服务器下载本机没有的数据
-                    BmobQuery<Note> bmobQuery = new BmobQuery<>();
-                    bmobQuery.addWhereEqualTo("userName", BmobUser.getCurrentUser(getActivity()).getUsername());
-                    bmobQuery.setLimit(50); // 返回50条数据
-                    // 从服务器获取数据
-                    bmobQuery.findObjects(getActivity(), new FindListener<Note>() {
-                        @Override
-                        public void onSuccess(List<Note> list) {
-                            // 获取所有没有在服务器中的数据
-                            list.removeAll(mAllNotes);
-//                            Log.v("LOG", "allNote:" + mAllNotes);
-//                            Log.v("LOG", "List: " + list + "");
-                            ContentResolver resolver = getActivity().getContentResolver();
-                            // 将此数据写入数据库中
-                            for (Note note : list) {
-                                ContentValues values = new ContentValues();
-                                values.put("title", note.getTitle());
-                                values.put("content", note.getContent());
-                                values.put("create_time", note.getCreateTime());
-                                values.put("is_sync", "true");
-                                resolver.insert(uri, values);
-                            }
-                            mAllNotes.clear();
-                            mSrlRefresh.setRefreshing(false);
-                            // 通知UI更新界面
-                            getLoaderManager().restartLoader(0, null, AllNotesFragment.this);
-                            Snackbar.make(root, "同步完成", Snackbar.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onError(int i, String s) {
-                            Snackbar.make(root, s, Snackbar.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-
-                @Override
-                public void onFailure(int i, String s) {
-                    mSrlRefresh.setRefreshing(false);
-                    Toast.makeText(getActivity(), "更新失败 " + s, Toast.LENGTH_SHORT).show();
-                }
-            });
+//            new BmobObject().insertBatch(getActivity(), mSyncNotes, new SaveListener() {
+//                @Override
+//                public void onSuccess() {
+//
+//                    mSyncNotes.clear();
+//                    // 向服务器下载本机没有的数据
+//                    BmobQuery<Note> bmobQuery = new BmobQuery<>();
+//                    bmobQuery.addWhereEqualTo("userName", BmobUser.getCurrentUser(getActivity()).getUsername());
+//                    bmobQuery.setLimit(50); // 返回50条数据
+//                    // 从服务器获取数据
+//                    bmobQuery.findObjects(getActivity(), new FindListener<Note>() {
+//                        @Override
+//                        public void onSuccess(List<Note> list) {
+//                            // 获取所有没有在服务器中的数据
+//                            list.removeAll(mAllNotes);
+////                            Log.v("LOG", "allNote:" + mAllNotes);
+////                            Log.v("LOG", "List: " + list + "");
+//                            ContentResolver resolver = getActivity().getContentResolver();
+//                            // 将此数据写入数据库中
+//                            for (Note note : list) {
+//                                ContentValues values = new ContentValues();
+//                                values.put("title", note.getTitle());
+//                                values.put("content", note.getContent());
+//                                values.put("create_time", note.getCreateTime());
+//                                values.put("is_sync", "true");
+//                                resolver.insert(uri, values);
+//                            }
+//                            mAllNotes.clear();
+//                            mSrlRefresh.setRefreshing(false);
+//                            // 通知UI更新界面
+//                            getLoaderManager().restartLoader(0, null, AllNotesFragment.this);
+//                            Snackbar.make(root, "同步完成", Snackbar.LENGTH_SHORT).show();
+//                        }
+//
+//                        @Override
+//                        public void onError(int i, String s) {
+//                            Snackbar.make(root, s, Snackbar.LENGTH_SHORT).show();
+//                        }
+//                    });
+//                }
+//
+//                @Override
+//                public void onFailure(int i, String s) {
+//                    mSrlRefresh.setRefreshing(false);
+//                    Toast.makeText(getActivity(), "更新失败 " + s, Toast.LENGTH_SHORT).show();
+//                }
+//            });
 
         }
     }

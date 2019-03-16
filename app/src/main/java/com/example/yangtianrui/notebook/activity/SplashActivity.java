@@ -10,13 +10,14 @@ import android.view.animation.Animation;
 import android.widget.ImageView;
 
 import com.example.yangtianrui.notebook.R;
+import com.example.yangtianrui.notebook.UplyNoteBook;
+import com.example.yangtianrui.notebook.config.Constants;
 
 import cn.bmob.v3.BmobUser;
 
 public class SplashActivity extends AppCompatActivity {
 
     private ImageView mIvSplash;
-    public static final String SEND_USER_NAME = "send_user_name";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,10 +28,10 @@ public class SplashActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN
                 , WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_splash);
-        mIvSplash = (ImageView) findViewById(R.id.id_iv_splash);
+        mIvSplash = findViewById(R.id.id_iv_splash);
         // 实现渐变效果
         Animation animation = new AlphaAnimation(0.5f, 1f);
-        animation.setDuration(3000);
+        animation.setDuration(1500);
         mIvSplash.startAnimation(animation);
         // 动画结束后启动登陆界面或主界面
         animation.setAnimationListener(new Animation.AnimationListener() {
@@ -41,15 +42,11 @@ public class SplashActivity extends AppCompatActivity {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-//                // FIXME 退出当前用户
-//                BmobUser.logOut(SplashActivity.this);
-                // 判断是否有用户登陆
-                BmobUser user = BmobUser.getCurrentUser(SplashActivity.this);
+                UplyNoteBook application = (UplyNoteBook) getApplication();
+                BmobUser user = application.getUser();
                 // 已经登陆
                 if (user != null) {
-                    String userName = user.getUsername();
                     Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-                    intent.putExtra(SEND_USER_NAME, userName);
                     startActivity(intent);
                 } else {
                     // 启动登陆界面

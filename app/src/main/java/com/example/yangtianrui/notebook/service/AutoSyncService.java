@@ -69,7 +69,7 @@ public class AutoSyncService extends Service {
                     note.setTitle(cursor.getString(cursor.getColumnIndex("title")));
                     note.setContent(cursor.getString(cursor.getColumnIndex("content")));
                     note.setCreateTime(cursor.getString(cursor.getColumnIndex("create_time")));
-                    note.setUserName(BmobUser.getCurrentUser(AutoSyncService.this).getUsername());
+//                    note.setUserName(BmobUser.getCurrentUser(AutoSyncService.this).getUsername());
                     mNotes.add(note);
                     // 标记为已同步
                     ContentValues values = new ContentValues();
@@ -78,23 +78,23 @@ public class AutoSyncService extends Service {
                 }
                 cursor.close();
                 // 向服务器发送数据
-                new BmobObject().insertBatch(AutoSyncService.this, mNotes, new SaveListener() {
-                    @Override
-                    public void onSuccess() {
-                        Intent intent = new Intent();
-                        intent.setAction(Constants.SYNC_BROADCAST_ACTION);
-                        intent.putExtra(SEND_SYNC_STATE, "自动同步完成");
-                        sendBroadcast(intent);
-                    }
-
-                    @Override
-                    public void onFailure(int i, String s) {
-                        Intent intent = new Intent();
-                        intent.setAction(Constants.SYNC_BROADCAST_ACTION);
-                        intent.putExtra(SEND_SYNC_STATE, s);
-                        sendBroadcast(intent);
-                    }
-                });
+//                new BmobObject().insertBatch(AutoSyncService.this, mNotes, new SaveListener() {
+//                    @Override
+//                    public void onSuccess() {
+//                        Intent intent = new Intent();
+//                        intent.setAction(Constants.SYNC_BROADCAST_ACTION);
+//                        intent.putExtra(SEND_SYNC_STATE, "自动同步完成");
+//                        sendBroadcast(intent);
+//                    }
+//
+//                    @Override
+//                    public void onFailure(int i, String s) {
+//                        Intent intent = new Intent();
+//                        intent.setAction(Constants.SYNC_BROADCAST_ACTION);
+//                        intent.putExtra(SEND_SYNC_STATE, s);
+//                        sendBroadcast(intent);
+//                    }
+//                });
             }
         }
     }

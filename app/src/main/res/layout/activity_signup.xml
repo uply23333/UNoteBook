@@ -7,7 +7,8 @@
     tools:context="com.example.yangtianrui.test.LoginActivity">
 
 
-    <!-- Login progress --><ProgressBar
+    <!-- Login progress -->
+    <ProgressBar
     android:id="@+id/id_pb_signup_loading"
     style="?android:attr/progressBarStyleLarge"
     android:layout_width="wrap_content"
@@ -70,9 +71,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="password"
-                    android:imeActionId="@+id/login"
-                    android:imeActionLabel="login in"
-                    android:imeOptions="actionUnspecified"
+                    android:imeOptions="actionDone"
                     android:inputType="textPassword"
                     android:maxLines="1"
                     android:singleLine="true" />
@@ -89,8 +88,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="verify"
-                    android:imeActionId="@+id/login"
-                    android:imeActionLabel="login in"
+                    android:imeActionId="@integer/action_sign_up"
+                    android:imeActionLabel="login up"
                     android:imeOptions="actionUnspecified"
                     android:inputType="textPassword"
                     android:maxLines="1"

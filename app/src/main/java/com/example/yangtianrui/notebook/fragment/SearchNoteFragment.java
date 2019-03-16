@@ -13,13 +13,12 @@ import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.yangtianrui.notebook.R;
 import com.example.yangtianrui.notebook.activity.NoteDetailActivity;
 import com.example.yangtianrui.notebook.adapter.ShowNoteAdapter;
-import com.example.yangtianrui.notebook.db.NoteDAO;
+import com.example.yangtianrui.notebook.db.NoteDao;
 
 /**
  * Created by yangtianrui on 16-5-23.
@@ -31,14 +30,14 @@ public class SearchNoteFragment extends Fragment {
     private ListView mLvResult;
     private Button mBtnQuery;
     private CursorAdapter mAdapter;
-    private NoteDAO mNoteDAO;
+    private NoteDao mNoteDao;
     private Cursor mCursor;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mNoteDAO = new NoteDAO(getActivity());
+        mNoteDao = new NoteDao(getActivity());
     }
 
     @Nullable
@@ -54,7 +53,7 @@ public class SearchNoteFragment extends Fragment {
             public void onClick(View v) {
                 String title = mEtSearch.getText().toString();
                 if (title.length() > 0 && title != null) {
-                    mCursor = mNoteDAO.queryNote("title like ? ", new String[]{"%" + title + "%"});
+                    mCursor = mNoteDao.queryNote("title like ? ", new String[]{"%" + title + "%"});
                 }
                 if (!mCursor.moveToNext()) {
                     Toast.makeText(getActivity(), "没有这个结果", Toast.LENGTH_SHORT).show();

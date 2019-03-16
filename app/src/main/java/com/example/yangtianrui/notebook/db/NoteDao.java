@@ -11,11 +11,11 @@ import android.text.Selection;
  * <p/>
  * 关于notes数据的CRUD
  */
-public class NoteDAO {
+public class NoteDao {
     private DBHelper mHelper;
     private Context context;
 
-    public NoteDAO(Context context) {
+    public NoteDao(Context context) {
         mHelper = new DBHelper(context);
     }
 

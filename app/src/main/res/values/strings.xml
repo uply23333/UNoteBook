@@ -1,10 +1,13 @@
 <resources>
-    <string name="app_name">Yi Note</string>
+    <string name="AppName">Uply\'s NoteBook</string>
 
-    <string name="all_notes">ALlNotes</string>
-    <string name="search_note">SearchByTitle</string>
-    <string name="setting">Setting</string>
-    <string name="modify_note">modify</string>
+    <string name="AllNotes">ALlNotes</string>
+    <string name="SearchByTitle">SearchByTitle</string>
+    <string name="Setting">Setting</string>
+    <string name="ModifyNote">modify</string>
     <string name="add_note">AddNote</string>
-    <string name="searchNote">Search</string>
+    <string name="SearchNote">Search</string>
+    <string name="AppDescription">Uply的毕业设计</string>
+    <string name="LoginText">登录</string>
+
 </resources>

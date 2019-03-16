@@ -8,11 +8,14 @@ package com.example.yangtianrui.notebook.config;
 public class Constants {
 
     // Bmob 数据服务API
-    public static final String BMOB_API_KEY = "609743a6cc87343c77abb9b300538645";
+    public static final String BMOB_API_KEY = "de9f1dd7ed265fc3e38ab190a2bd117c";
 
     // 应用包名
     public static final String PACKAGE_NAME = "com.example.yangtianrui.notebook";
 
     public static final String SYNC_BROADCAST_ACTION = "com.example.yangtianrui.notebook.SYNC";
+
+
+    public static final String SEND_USER_NAME = "send_user_name";
 
 }

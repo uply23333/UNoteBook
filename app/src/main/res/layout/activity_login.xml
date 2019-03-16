@@ -1,24 +1,24 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
-    android:orientation="vertical"
-    tools:context="com.example.yangtianrui.test.LoginActivity">
+    android:orientation="vertical">
 
 
-    <!-- Login progress --><ProgressBar
-    android:id="@+id/id_pb_loading"
-    style="?android:attr/progressBarStyleLarge"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
-    android:visibility="gone" />
+    <!-- Login progress -->
+    <ProgressBar
+        android:id="@+id/id_pb_loading"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone" />
 
     <ScrollView
         android:id="@+id/login_form"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fillViewport="false">
 
         <LinearLayout
             android:id="@+id/id_lv_login_form"
@@ -30,19 +30,19 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
                 android:layout_marginTop="20dp"
+                android:layout_marginBottom="5dp"
                 android:gravity="center"
-                android:text="YI NOTE"
+                android:text="@string/AppName"
                 android:textSize="25sp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="40dp"
                 android:layout_marginTop="1dp"
+                android:layout_marginBottom="40dp"
                 android:gravity="center"
-                android:text="一款简单易用的记事软件"
+                android:text="@string/AppDescription"
                 android:textSize="13sp" />
 
 
@@ -57,6 +57,7 @@
                     android:hint="userName"
                     android:inputType="textCapCharacters"
                     android:maxLines="1"
+                    android:selectAllOnFocus="true"
                     android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>
@@ -70,8 +71,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="password"
-                    android:imeActionId="@+id/login"
-                    android:imeActionLabel="login in"
+                    android:imeActionId="@integer/action_sign_in"
+                    android:imeActionLabel="@string/LoginText"
                     android:imeOptions="actionUnspecified"
                     android:inputType="textPassword"
                     android:maxLines="1"
@@ -93,7 +94,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
                 android:layout_marginTop="20dp"
-                android:onClick="tv_signup"
+                android:onClick="signUp"
                 android:text="注册新用户" />
 
         </LinearLayout>
