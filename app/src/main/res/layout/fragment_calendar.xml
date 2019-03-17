@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout android:id="@+id/fragment_calendar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.ldf.calendar.view.MonthPager
+        android:id="@+id/calendar_view"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:background="#fff">
+    </com.ldf.calendar.view.MonthPager>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="com.ldf.calendar.behavior.RecyclerViewBehavior"
+        android:background="#c2c2c2"
+        android:layout_gravity="bottom"/>
+
+</android.support.design.widget.CoordinatorLayout>
