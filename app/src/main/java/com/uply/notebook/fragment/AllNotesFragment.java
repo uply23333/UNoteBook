@@ -97,9 +97,9 @@ public class AllNotesFragment extends Fragment implements AdapterView.OnItemClic
     public View onCreateView(LayoutInflater inflater
             , ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_all_note, container, false);
-        mLvNotes = (ListView) root.findViewById(R.id.id_lv_all_note);
+        mLvNotes = root.findViewById(R.id.id_lv_all_note);
 
-        mSrlRefresh = (SwipeRefreshLayout) root.findViewById(R.id.id_srl_refresh);
+        mSrlRefresh = root.findViewById(R.id.id_srl_refresh);
         mSrlRefresh.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
         mSrlRefresh.setSize(SwipeRefreshLayout.DEFAULT);
         mSrlRefresh.setProgressViewEndTarget(true, 200);
