@@ -1,14 +1,9 @@
-package com.example.yangtianrui.notebook.widget;
+package com.uply.notebook.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.example.yangtianrui.notebook.R;
 import com.ldf.calendar.interf.IDayRenderer;
-import com.ldf.calendar.model.CalendarDate;
 import com.ldf.calendar.view.DayView;
 
 
