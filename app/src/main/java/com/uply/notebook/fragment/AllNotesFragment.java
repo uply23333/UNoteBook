@@ -64,7 +64,7 @@ public class AllNotesFragment extends Fragment implements AdapterView.OnItemClic
     private View root;
 
     private List<BmobObject> mSyncNotes = new ArrayList<>();
-    private Set<Note> mAllNotes = new HashSet<>();
+    private Set<Note> noteSet = new HashSet<>();
 
     // 自动同步功能需使用
     private Timer mTimer;
@@ -179,7 +179,6 @@ public class AllNotesFragment extends Fragment implements AdapterView.OnItemClic
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Cursor c = (Cursor) mAdapter.getItem(position); // CursorAdapter中getItem()返回特定的cursor对象
         int itemID = c.getInt(c.getColumnIndex("_id"));
-//        Log.v("LOG", "AllNoteFragment itemID: " + itemID);
         Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
         intent.putExtra(NoteDetailActivity.NOTE_ID, itemID);
         startActivity(intent);
@@ -188,7 +187,6 @@ public class AllNotesFragment extends Fragment implements AdapterView.OnItemClic
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri uri = Uri.parse("content://com.terry.NoteBook");
-
         return new CursorLoader(getActivity(), uri, null, null, null, null);
     }
 
@@ -219,7 +217,7 @@ public class AllNotesFragment extends Fragment implements AdapterView.OnItemClic
                 note.setContent(cursor.getString(cursor.getColumnIndex("content")));
                 note.setCreateTime(cursor.getString(cursor.getColumnIndex("create_time")));
                 // 将数据库中所有数据添加到集合中
-                mAllNotes.add(note);
+                noteSet.add(note);
                 // 获取当前用户
                 BmobUser user = ((UplyNoteBook)getActivity().getApplication()).getUser();
                 note.setUserName(user.getUsername());
@@ -246,7 +244,7 @@ public class AllNotesFragment extends Fragment implements AdapterView.OnItemClic
                         public void done(List<Note> list, BmobException e) {
                             if (e == null) {
                                 // 获取所有没有在服务器中的数据
-                                list.removeAll(mAllNotes);
+                                list.removeAll(noteSet);
                                 ContentResolver resolver = getActivity().getContentResolver();
                                 // 将此数据写入数据库中
                                 for (Note note : list) {
@@ -257,7 +255,7 @@ public class AllNotesFragment extends Fragment implements AdapterView.OnItemClic
                                     values.put("is_sync", "true");
                                     resolver.insert(uri, values);
                                 }
-                                mAllNotes.clear();
+                                noteSet.clear();
                                 mSrlRefresh.setRefreshing(false);
                                 // 通知UI更新界面
                                 getLoaderManager().restartLoader(0, null, AllNotesFragment.this);
