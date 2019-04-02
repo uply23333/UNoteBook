@@ -1,10 +1,8 @@
-package com.example.yangtianrui.notebook.util;
+package com.uply.notebook.util;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-
-import android.util.Log;
 
 /**
  * Json结果解析类

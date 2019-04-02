@@ -4,11 +4,11 @@
     <item
         android:id="@+id/id_menu_add_note_auto"
         android:icon="@drawable/ic_menu_voice"
-        android:title="@string/add_note"
+        android:title="@string/AddNote"
         app:showAsAction="always" />
     <item
         android:id="@+id/id_menu_add_note"
         android:icon="@drawable/ic_menu_addnote"
-        android:title="@string/add_note"
+        android:title="@string/AddNote"
         app:showAsAction="always" />
 </menu>

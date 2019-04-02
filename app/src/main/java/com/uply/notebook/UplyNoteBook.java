@@ -1,8 +1,8 @@
-package com.example.yangtianrui.notebook;
+package com.uply.notebook;
 
 import android.app.Application;
 
-import com.example.yangtianrui.notebook.config.Constants;
+import com.uply.notebook.config.Constants;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechUtility;
 

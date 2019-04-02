@@ -1,4 +1,4 @@
-package com.example.yangtianrui.notebook.service;
+package com.uply.notebook.service;
 
 import android.app.Service;
 import android.content.ContentResolver;
@@ -9,8 +9,8 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
-import com.example.yangtianrui.notebook.bean.Note;
-import com.example.yangtianrui.notebook.config.Constants;
+import com.uply.notebook.bean.Note;
+import com.uply.notebook.config.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,6 @@ import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BatchResult;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.QueryListListener;
-import cn.bmob.v3.listener.SaveListener;
 
 /**
  * Created by yangtianrui on 16-6-14.

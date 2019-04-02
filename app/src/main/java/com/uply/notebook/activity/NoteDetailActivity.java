@@ -1,4 +1,4 @@
-package com.example.yangtianrui.notebook.activity;
+package com.uply.notebook.activity;
 
 import android.content.ContentValues;
 import android.content.Intent;
@@ -12,22 +12,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.yangtianrui.notebook.R;
-import com.example.yangtianrui.notebook.bean.Note;
-import com.example.yangtianrui.notebook.db.NoteDao;
-import com.example.yangtianrui.notebook.util.TextFormatUtil;
-import com.example.yangtianrui.notebook.widget.LineEditText;
+import com.uply.notebook.R;
+import com.uply.notebook.bean.Note;
+import com.uply.notebook.db.NoteDao;
+import com.uply.notebook.util.TextFormatUtil;
+import com.uply.notebook.widget.LineEditText;
 
-import java.time.LocalDate;
-import java.util.Calendar;
 import java.util.Date;
 
-/**
- * Created by yangtianrui on 16-5-22.
- */
+
 public class NoteDetailActivity extends AppCompatActivity implements View.OnClickListener {
 
-    public static final String SENDED_NOTE_ID = "note_id";
+    public static final String NOTE_ID = "note_id";
     private EditText mEtTitle;
     private LineEditText mEtContent;
     private Button mBtnModify;
@@ -41,8 +37,8 @@ public class NoteDetailActivity extends AppCompatActivity implements View.OnClic
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_detail);
-        mToolbar = (Toolbar) findViewById(R.id.id_toolbar_detail);
-        mToolbar.setTitle("Node Detail");
+        mToolbar = findViewById(R.id.id_toolbar_detail);
+        mToolbar.setTitle(R.string.NoteDetail);
         // 显示返回按钮
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -54,9 +50,9 @@ public class NoteDetailActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void initData() {
+        mNote = new Note("", "", null);
         Intent intent = getIntent();
-        mNote = new Note("", "", TextFormatUtil.formatDate(new Date()));
-        mNoteID = intent.getIntExtra(SENDED_NOTE_ID, -1);
+        mNoteID = intent.getIntExtra(NOTE_ID, -1);
         // 如果有ID参数,从数据库中获取信息
         mNoteDao = new NoteDao(this);
         if (mNoteID != -1) {
@@ -67,27 +63,32 @@ public class NoteDetailActivity extends AppCompatActivity implements View.OnClic
                 mNote.setContent(mCursor.getString(mCursor.getColumnIndex("content")));
                 mNote.setCreateTime(mCursor.getString(mCursor.getColumnIndex("create_time")));
             }
-        }
-        String content = intent.getStringExtra("SPEECH_CONTENT");
-        if (content != null) {
-            mNote.setContent(content);
+        } else {
+            String content = intent.getStringExtra("SPEECH_CONTENT");
+            if (content != null) {
+                mNote.setContent(content);
+            }
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
     }
 
 
     private void initView() {
-        mEtTitle = (EditText) findViewById(R.id.id_et_title);
-        mEtContent = (LineEditText) findViewById(R.id.id_et_content);
-        mBtnModify = (Button) findViewById(R.id.id_btn_modify);
+        mEtTitle = findViewById(R.id.id_et_title);
+        mEtContent = findViewById(R.id.id_et_content);
+        mBtnModify = findViewById(R.id.id_btn_modify);
         mEtTitle.setText(mNote.getTitle());
         mEtContent.setText(mNote.getContent());
         mBtnModify.setOnClickListener(this);
+        Intent intent = getIntent();
+        boolean isUpdate = intent.getBooleanExtra("IS_UPDATE", false);
+        if (isUpdate) {
+            mBtnModify.setText(R.string.ModifyNote);
+        }
     }
 
     @Override
@@ -106,8 +107,9 @@ public class NoteDetailActivity extends AppCompatActivity implements View.OnClic
             ContentValues values = new ContentValues();
             values.put("title", title);
             values.put("content", content);
-            values.put("create_time", mNote.getCreateTime());
-            int rowID = -1;
+            values.put("create_time", TextFormatUtil.formatDate(new Date()));
+            values.put("is_sync", mNote.isSync());
+            int rowID;
             // 向数据库添加或者更新已有记录
             if (mNoteID == -1) {
                 rowID = (int) mNoteDao.insertNote(values);
@@ -115,7 +117,11 @@ public class NoteDetailActivity extends AppCompatActivity implements View.OnClic
                 rowID = mNoteDao.updateNote(values, "_id=?", new String[]{mNoteID + ""});
             }
             if (rowID != -1) {
-                Toast.makeText(this, "修改或添加成功", Toast.LENGTH_SHORT).show();
+                if (mNoteID == -1) {
+                    Toast.makeText(this, "添加成功", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "修改成功", Toast.LENGTH_SHORT).show();
+                }
                 getContentResolver().notifyChange(Uri.parse("content://com.terry.NoteBook"), null);
                 finish();
             }

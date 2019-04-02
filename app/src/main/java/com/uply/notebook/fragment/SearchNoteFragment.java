@@ -1,4 +1,4 @@
-package com.example.yangtianrui.notebook.fragment;
+package com.uply.notebook.fragment;
 
 import android.app.Fragment;
 import android.content.Intent;
@@ -15,10 +15,10 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.yangtianrui.notebook.R;
-import com.example.yangtianrui.notebook.activity.NoteDetailActivity;
-import com.example.yangtianrui.notebook.adapter.ShowNoteAdapter;
-import com.example.yangtianrui.notebook.db.NoteDao;
+import com.uply.notebook.R;
+import com.uply.notebook.activity.NoteDetailActivity;
+import com.uply.notebook.adapter.ShowNoteAdapter;
+import com.uply.notebook.db.NoteDao;
 
 /**
  * Created by yangtianrui on 16-5-23.
@@ -68,7 +68,7 @@ public class SearchNoteFragment extends Fragment {
                 Cursor c = (Cursor) mAdapter.getItem(position); // CursorAdapter中getItem()返回特定的cursor对象
                 int itemID = c.getInt(c.getColumnIndex("_id"));
                 Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
-                intent.putExtra(NoteDetailActivity.SENDED_NOTE_ID, itemID);
+                intent.putExtra(NoteDetailActivity.NOTE_ID, itemID);
                 startActivity(intent);
             }
         });

@@ -23,7 +23,7 @@
             android:gravity="top"
             android:padding="10dp" />
 
-        <com.example.yangtianrui.notebook.widget.LineEditText
+        <com.uply.notebook.widget.LineEditText
             android:id="@+id/id_et_content"
             android:layout_width="match_parent"
             android:layout_height="300dp"
@@ -37,7 +37,7 @@
             android:layout_height="50dp"
             android:layout_gravity="right"
             android:padding="10dp"
-            android:text="@string/ModifyNote" />
+            android:text="@string/AddNote" />
     </LinearLayout>
 
 </LinearLayout>

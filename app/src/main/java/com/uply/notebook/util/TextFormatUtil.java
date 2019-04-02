@@ -1,4 +1,4 @@
-package com.example.yangtianrui.notebook.util;
+package com.uply.notebook.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

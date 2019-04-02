@@ -2,15 +2,13 @@
     <string name="AppName">Uply\'s NoteBook</string>
 
     <string name="AllNotes">ALlNotes</string>
-    <string name="SearchByTitle">SearchByTitle</string>
-    <string name="Setting">Setting</string>
-    <string name="ModifyNote">modify</string>
-    <string name="add_note">AddNote</string>
-    <string name="SearchNote">Search</string>
+    <string name="SearchByTitle">按标题搜索</string>
+    <string name="Setting">设置</string>
+    <string name="SearchNote">搜索</string>
     <string name="AppDescription">Uply的毕业设计</string>
     <string name="LoginText">登录</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
+    <string name="AddNote">添加</string>
+    <string name="ModifyNote">修改</string>
+    <string name="NoteDetail">Node Detail</string>
 </resources>

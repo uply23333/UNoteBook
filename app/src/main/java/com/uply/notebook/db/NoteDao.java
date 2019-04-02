@@ -1,10 +1,9 @@
-package com.example.yangtianrui.notebook.db;
+package com.uply.notebook.db;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.text.Selection;
 
 /**
  * Created by yangtianrui on 16-5-21.
@@ -13,7 +12,6 @@ import android.text.Selection;
  */
 public class NoteDao {
     private DBHelper mHelper;
-    private Context context;
 
     public NoteDao(Context context) {
         mHelper = new DBHelper(context);
@@ -21,7 +19,7 @@ public class NoteDao {
 
     public long insertNote(ContentValues contentValues) {
         SQLiteDatabase db = mHelper.getWritableDatabase();
-        long id = db.insert(DBHelper.DB_NAME, null, contentValues);
+        long id = db.insert(DBHelper.T_NOTES, null, contentValues);
         db.close();
         return id;
     }
@@ -29,21 +27,21 @@ public class NoteDao {
     public int updateNote(ContentValues values, String whereClause, String[] whereArgs) {
         SQLiteDatabase db = mHelper.getWritableDatabase();
         int count;
-        count = db.update(DBHelper.DB_NAME, values, whereClause, whereArgs);
+        count = db.update(DBHelper.T_NOTES, values, whereClause, whereArgs);
         db.close();
         return count;
     }
 
     public int deleteNote(String whereClause, String[] whereArgs) {
         SQLiteDatabase db = mHelper.getWritableDatabase();
-        int count = db.delete(DBHelper.DB_NAME, whereClause, whereArgs);
+        int count = db.delete(DBHelper.T_NOTES, whereClause, whereArgs);
         return count;
     }
 
     public Cursor queryNote(String selection, String[] selectionArgs) {
         SQLiteDatabase db = mHelper.getReadableDatabase();
-        Cursor c = db.query(false, DBHelper.DB_NAME, null, selection, selectionArgs
-                , null, null, null, null);
+        Cursor c = db.query(false, DBHelper.T_NOTES, null, selection,
+                selectionArgs, null, null, null, null);
         return c;
     }
 

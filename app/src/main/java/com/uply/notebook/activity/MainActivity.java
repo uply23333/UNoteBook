@@ -1,4 +1,4 @@
-package com.example.yangtianrui.notebook.activity;
+package com.uply.notebook.activity;
 
 import android.app.Fragment;
 import android.content.Intent;
@@ -20,14 +20,12 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.yangtianrui.notebook.R;
-import com.example.yangtianrui.notebook.UplyNoteBook;
-import com.example.yangtianrui.notebook.config.Constants;
-import com.example.yangtianrui.notebook.fragment.AllNotesFragment;
-import com.example.yangtianrui.notebook.fragment.MyCalendar;
-import com.example.yangtianrui.notebook.fragment.SearchNoteFragment;
-import com.example.yangtianrui.notebook.fragment.SettingFragment;
-import com.example.yangtianrui.notebook.util.JsonParser;
+import com.uply.notebook.R;
+import com.uply.notebook.UplyNoteBook;
+import com.uply.notebook.fragment.AllNotesFragment;
+import com.uply.notebook.fragment.SearchNoteFragment;
+import com.uply.notebook.fragment.SettingFragment;
+import com.uply.notebook.util.JsonParser;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.RecognizerResult;
 import com.iflytek.cloud.SpeechError;
@@ -53,7 +51,7 @@ public class MainActivity extends AppCompatActivity
     private TextView mTvUserName;
     private View mHeaderView;
 
-    private Fragment mFragments[] = new Fragment[4];
+    private Fragment mFragments[] = new Fragment[3];
 
     private String mUserName;
     private long curTimeMills;
@@ -72,8 +70,7 @@ public class MainActivity extends AppCompatActivity
         mUserName = ((UplyNoteBook)getApplication()).getUser().getUsername();
         mFragments[0] = new AllNotesFragment();
         mFragments[1] = new SearchNoteFragment();
-        mFragments[2] = new MyCalendar();
-        mFragments[3] = new SettingFragment();
+        mFragments[2] = new SettingFragment();
         initView();
         showFragment(mFragments[0]);
     }
@@ -188,11 +185,8 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_search:
                 showFragment(mFragments[1]);
                 break;
-            case R.id.nav_calendar:
-                showFragment(mFragments[2]);
-                break;
             case R.id.nav_setting:
-                showFragment(mFragments[3]);
+                showFragment(mFragments[2]);
                 break;
             case R.id.nav_logout:
                 logout();

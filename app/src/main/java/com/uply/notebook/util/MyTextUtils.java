@@ -1,4 +1,4 @@
-package com.example.yangtianrui.notebook.util;
+package com.uply.notebook.util;
 
 /**
  * @Auther: Uply

@@ -1,10 +1,9 @@
-package com.example.yangtianrui.notebook.activity;
+package com.uply.notebook.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -17,11 +16,10 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.yangtianrui.notebook.R;
-import com.example.yangtianrui.notebook.service.UserService;
-import com.example.yangtianrui.notebook.util.MyTextUtils;
+import com.uply.notebook.R;
+import com.uply.notebook.service.UserService;
+import com.uply.notebook.util.MyTextUtils;
 
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;

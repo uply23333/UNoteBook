@@ -1,7 +1,7 @@
-package com.example.yangtianrui.notebook.service;
+package com.uply.notebook.service;
 
-import com.example.yangtianrui.notebook.activity.LoginActivity;
-import com.example.yangtianrui.notebook.activity.SignUpActivity;
+import com.uply.notebook.activity.LoginActivity;
+import com.uply.notebook.activity.SignUpActivity;
 
 import cn.bmob.v3.BmobUser;
 

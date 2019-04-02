@@ -1,4 +1,4 @@
-package com.example.yangtianrui.notebook.activity;
+package com.uply.notebook.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -16,8 +16,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.example.yangtianrui.notebook.R;
-import com.example.yangtianrui.notebook.service.UserService;
+import com.uply.notebook.R;
+import com.uply.notebook.service.UserService;
 
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;

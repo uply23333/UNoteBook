@@ -1,4 +1,4 @@
-package com.example.yangtianrui.notebook.widget;
+package com.uply.notebook.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;

@@ -1,4 +1,4 @@
-package com.example.yangtianrui.notebook.fragment;
+package com.uply.notebook.fragment;
 
 import android.app.Fragment;
 import android.app.LoaderManager;
@@ -24,17 +24,16 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import com.example.yangtianrui.notebook.R;
-import com.example.yangtianrui.notebook.UplyNoteBook;
-import com.example.yangtianrui.notebook.activity.MainActivity;
-import com.example.yangtianrui.notebook.activity.NoteDetailActivity;
-import com.example.yangtianrui.notebook.adapter.ShowNoteAdapter;
-import com.example.yangtianrui.notebook.bean.Note;
-import com.example.yangtianrui.notebook.config.Constants;
-import com.example.yangtianrui.notebook.db.NoteDao;
-import com.example.yangtianrui.notebook.service.AutoSyncService;
+import com.uply.notebook.R;
+import com.uply.notebook.UplyNoteBook;
+import com.uply.notebook.activity.MainActivity;
+import com.uply.notebook.activity.NoteDetailActivity;
+import com.uply.notebook.adapter.ShowNoteAdapter;
+import com.uply.notebook.bean.Note;
+import com.uply.notebook.config.Constants;
+import com.uply.notebook.db.NoteDao;
+import com.uply.notebook.service.AutoSyncService;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -50,10 +49,8 @@ import cn.bmob.v3.datatype.BatchResult;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.QueryListListener;
-import cn.bmob.v3.listener.SaveListener;
 
 /**
- * Created by yangtianrui on 16-5-21.
  * 显示所有Note,使用Loader实现异步加载
  */
 public class AllNotesFragment extends Fragment implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor>, SwipeRefreshLayout.OnRefreshListener {
@@ -100,9 +97,9 @@ public class AllNotesFragment extends Fragment implements AdapterView.OnItemClic
     public View onCreateView(LayoutInflater inflater
             , ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_all_note, container, false);
-        mLvNotes = (ListView) root.findViewById(R.id.id_lv_all_note);
+        mLvNotes = root.findViewById(R.id.id_lv_all_note);
 
-        mSrlRefresh = (SwipeRefreshLayout) root.findViewById(R.id.id_srl_refresh);
+        mSrlRefresh = root.findViewById(R.id.id_srl_refresh);
         mSrlRefresh.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
         mSrlRefresh.setSize(SwipeRefreshLayout.DEFAULT);
         mSrlRefresh.setProgressViewEndTarget(true, 200);
@@ -184,7 +181,7 @@ public class AllNotesFragment extends Fragment implements AdapterView.OnItemClic
         int itemID = c.getInt(c.getColumnIndex("_id"));
 //        Log.v("LOG", "AllNoteFragment itemID: " + itemID);
         Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
-        intent.putExtra(NoteDetailActivity.SENDED_NOTE_ID, itemID);
+        intent.putExtra(NoteDetailActivity.NOTE_ID, itemID);
         startActivity(intent);
     }
 

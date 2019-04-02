@@ -1,4 +1,4 @@
-package com.example.yangtianrui.notebook.adapter;
+package com.uply.notebook.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,7 +7,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.example.yangtianrui.notebook.R;
+
+import com.uply.notebook.R;
 
 import java.util.ArrayList;
 import java.util.List;

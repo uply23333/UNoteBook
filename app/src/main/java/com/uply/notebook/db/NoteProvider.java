@@ -1,4 +1,4 @@
-package com.example.yangtianrui.notebook.db;
+package com.uply.notebook.db;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -23,9 +23,7 @@ public class NoteProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        // Log.v("LOG","NoteProvider -- query()");
         Cursor c = mNoteDao.queryNote(selection, selectionArgs);
-//        Log.v("LOG", "id=" + c.getInt(1) + " content=" + c.getString(2));
         return c;
     }
 

@@ -1,9 +1,10 @@
-package com.example.yangtianrui.notebook.fragment;
+package com.uply.notebook.fragment;
 
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 
-import com.example.yangtianrui.notebook.R;
+import com.uply.notebook.R;
+
 
 /**
  * Created by yangtianrui on 16-5-23.

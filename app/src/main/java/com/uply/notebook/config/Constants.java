@@ -1,4 +1,4 @@
-package com.example.yangtianrui.notebook.config;
+package com.uply.notebook.config;
 
 /**
  * Created by yangtianrui on 16-6-12.

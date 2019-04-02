@@ -1,4 +1,4 @@
-package com.example.yangtianrui.notebook.bean;
+package com.uply.notebook.bean;
 
 import cn.bmob.v3.BmobObject;
 

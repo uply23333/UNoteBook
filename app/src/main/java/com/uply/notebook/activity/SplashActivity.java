@@ -1,4 +1,4 @@
-package com.example.yangtianrui.notebook.activity;
+package com.uply.notebook.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,9 +9,8 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageView;
 
-import com.example.yangtianrui.notebook.R;
-import com.example.yangtianrui.notebook.UplyNoteBook;
-import com.example.yangtianrui.notebook.config.Constants;
+import com.uply.notebook.R;
+import com.uply.notebook.UplyNoteBook;
 
 import cn.bmob.v3.BmobUser;
 
