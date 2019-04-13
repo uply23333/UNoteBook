@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.uply.notebook.R;
 import com.uply.notebook.UplyNoteBook;
 import com.uply.notebook.fragment.AllNotesFragment;
+import com.uply.notebook.fragment.MyCalendar;
 import com.uply.notebook.fragment.SearchNoteFragment;
 import com.uply.notebook.fragment.SettingFragment;
 import com.uply.notebook.util.JsonParser;
@@ -51,7 +52,7 @@ public class MainActivity extends AppCompatActivity
     private TextView mTvUserName;
     private View mHeaderView;
 
-    private Fragment mFragments[] = new Fragment[3];
+    private Fragment mFragments[] = new Fragment[4];
 
     private String mUserName;
     private long curTimeMills;
@@ -71,6 +72,7 @@ public class MainActivity extends AppCompatActivity
         mFragments[0] = new AllNotesFragment();
         mFragments[1] = new SearchNoteFragment();
         mFragments[2] = new SettingFragment();
+        mFragments[3] = new MyCalendar();
         initView();
         showFragment(mFragments[0]);
     }
@@ -140,7 +142,11 @@ public class MainActivity extends AppCompatActivity
                         }
                         if (b) { // 录音结束
                             Intent intent = new Intent(MainActivity.this, NoteDetailActivity.class);
-                            intent.putExtra("SPEECH_CONTENT", contents.stream().collect(Collectors.joining("\n")));
+                            StringBuilder stringBuilder = new StringBuilder();
+                            for (String str: contents) {
+                                stringBuilder.append(str + "\n");
+                            }
+                            intent.putExtra("SPEECH_CONTENT", stringBuilder.toString());
                             startActivity(intent);
                         }
                     }
@@ -187,6 +193,9 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_setting:
                 showFragment(mFragments[2]);
+                break;
+            case R.id.nav_calendar:
+                showFragment(mFragments[3]);
                 break;
             case R.id.nav_logout:
                 logout();
