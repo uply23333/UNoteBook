@@ -2,10 +2,12 @@ package com.uply.notebook.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ldf.calendar.Utils;
 import com.ldf.calendar.component.State;
 import com.ldf.calendar.interf.IDayRenderer;
 import com.ldf.calendar.model.CalendarDate;
@@ -34,8 +36,8 @@ public class CustomDayView extends DayView {
      */
     public CustomDayView(Context context, int layoutResource) {
         super(context, layoutResource);
-        dateTv = (TextView) findViewById(R.id.date);
-        marker = (ImageView) findViewById(R.id.maker);
+        dateTv = findViewById(R.id.date);
+        marker = findViewById(R.id.maker);
         selectedBackground = findViewById(R.id.selected_background);
         selectedBackground = findViewById(R.id.selected_background);
         todayBackground = findViewById(R.id.today_background);
@@ -43,8 +45,45 @@ public class CustomDayView extends DayView {
 
     @Override
     public void refreshContent() {
-        CalendarDate date = day.getDate();
-        State state = day.getState();
+        renderToday(day.getDate());
+        renderSelect(day.getState());
+        renderMarker(day.getDate(), day.getState());
+        super.refreshContent();
+    }
+
+    private void renderMarker(CalendarDate date, State state) {
+        if (Utils.loadMarkData().containsKey(date.toString())) {
+            if (state == State.SELECT || date.toString().equals(today.toString())) {
+                marker.setVisibility(GONE);
+            } else {
+                marker.setVisibility(VISIBLE);
+                if (Utils.loadMarkData().get(date.toString()).equals("0")) {
+                    marker.setEnabled(true);
+                } else if (Utils.loadMarkData().get(date.toString()).equals("1")) {
+                    marker.setEnabled(true);
+                } else {
+                    marker.setEnabled(false);
+                }
+            }
+        } else {
+            marker.setVisibility(GONE);
+        }
+    }
+
+    private void renderSelect(State state) {
+        if (state == State.SELECT) {
+            selectedBackground.setVisibility(VISIBLE);
+            dateTv.setTextColor(Color.WHITE);
+        } else if (state == State.NEXT_MONTH || state == State.PAST_MONTH) {
+            selectedBackground.setVisibility(GONE);
+            dateTv.setTextColor(Color.parseColor("#d5d5d5"));
+        } else {
+            selectedBackground.setVisibility(GONE);
+            dateTv.setTextColor(Color.parseColor("#111111"));
+        }
+    }
+
+    private void renderToday(CalendarDate date) {
         if (date != null) {
             if (date.equals(today)) {
                 dateTv.setText("今");
@@ -54,12 +93,6 @@ public class CustomDayView extends DayView {
                 todayBackground.setVisibility(GONE);
             }
         }
-        if (state == State.SELECT) {
-            selectedBackground.setVisibility(VISIBLE);
-        } else {
-            selectedBackground.setVisibility(GONE);
-        }
-        super.refreshContent();
     }
 
     @Override

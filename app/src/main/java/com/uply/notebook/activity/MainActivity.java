@@ -23,7 +23,7 @@ import android.widget.Toast;
 import com.uply.notebook.R;
 import com.uply.notebook.UplyNoteBook;
 import com.uply.notebook.fragment.AllNotesFragment;
-import com.uply.notebook.fragment.MyCalendar;
+import com.uply.notebook.fragment.MyCalendarFragment;
 import com.uply.notebook.fragment.SearchNoteFragment;
 import com.uply.notebook.fragment.SettingFragment;
 import com.uply.notebook.util.JsonParser;
@@ -35,7 +35,6 @@ import com.iflytek.cloud.ui.RecognizerDialogListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import cn.bmob.v3.BmobUser;
 
@@ -72,7 +71,7 @@ public class MainActivity extends AppCompatActivity
         mFragments[0] = new AllNotesFragment();
         mFragments[1] = new SearchNoteFragment();
         mFragments[2] = new SettingFragment();
-        mFragments[3] = new MyCalendar();
+        mFragments[3] = new MyCalendarFragment();
         initView();
         showFragment(mFragments[0]);
     }
