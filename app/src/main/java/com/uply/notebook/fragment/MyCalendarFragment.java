@@ -14,12 +14,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.TextView;
 
 import com.ldf.calendar.Utils;
 import com.uply.notebook.R;
-import com.uply.notebook.activity.NoteDetailActivity;
 import com.uply.notebook.adapter.CalendarNoteAdapter;
 import com.uply.notebook.db.NoteDao;
 import com.uply.notebook.widget.CustomDayView;

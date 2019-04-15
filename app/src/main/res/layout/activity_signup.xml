@@ -34,7 +34,7 @@
                 android:layout_marginBottom="5dp"
                 android:layout_marginTop="20dp"
                 android:gravity="center"
-                android:text="YI NOTE"
+                android:text="@string/AppName"
                 android:textSize="25sp" />
 
             <TextView
@@ -43,7 +43,7 @@
                 android:layout_marginBottom="40dp"
                 android:layout_marginTop="1dp"
                 android:gravity="center"
-                android:text="注册新用户,即刻体验所有服务"
+                android:text="@string/AppDescription"
                 android:textSize="13sp" />
 
 
@@ -56,6 +56,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="userName"
+                    android:inputType="textCapCharacters"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/id_et_signup_nickname"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="nickname"
                     android:inputType="textCapCharacters"
                     android:maxLines="1"
                     android:singleLine="true" />

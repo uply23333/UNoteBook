@@ -28,7 +28,7 @@ public class UplyNoteBook extends Application {
         // 初始化Bmob
         Bmob.initialize(this, Constants.BMOB_API_KEY);
         user = BmobUser.getCurrentUser(BmobUser.class);
-        SpeechUtility.createUtility(this, SpeechConstant.APPID +"=" + Constants.XUNFEI_API_KEY);
+        SpeechUtility.createUtility(this, SpeechConstant.APPID + "=" + Constants.XUNFEI_API_KEY);
     }
 
     public BmobUser getUser() {
