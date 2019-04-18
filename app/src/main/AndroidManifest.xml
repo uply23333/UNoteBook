@@ -33,6 +33,9 @@
         <activity
             android:name=".activity.NoteDetailActivity"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".activity.CalendarDetailActivity"
+            android:theme="@style/AppTheme" />
 
         <provider
             android:name=".db.NoteProvider"

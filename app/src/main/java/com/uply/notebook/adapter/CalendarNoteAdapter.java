@@ -9,11 +9,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bigkoo.pickerview.builder.TimePickerBuilder;
+import com.bigkoo.pickerview.listener.OnTimeSelectListener;
+import com.bigkoo.pickerview.view.TimePickerView;
 import com.ldf.calendar.model.CalendarDate;
 import com.uply.notebook.R;
+import com.uply.notebook.activity.CalendarDetailActivity;
 import com.uply.notebook.activity.NoteDetailActivity;
+import com.uply.notebook.util.TextFormatUtil;
 import com.uply.notebook.widget.CursorAdapter;
+
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * @Auther: Uply
@@ -33,9 +43,9 @@ public class CalendarNoteAdapter extends CursorAdapter<CalendarNoteAdapter.NoteV
     public void onBindViewHolder(NoteViewHolder holder, Cursor cursor) {
         holder.mClTitle.setText(cursor.getString(cursor.getColumnIndex("title")));
         holder._id = cursor.getInt(cursor.getColumnIndex("_id"));
-        CalendarDate date = new CalendarDate();
-        holder.mClTime.setText(cursor.getString(cursor.getColumnIndex("create_time")));
-        holder.mClDate.setText(date.getMonth() + "月" + date.getDay() + "日");
+        String [] date = cursor.getString(cursor.getColumnIndex("create_time")).split(" ");//notify_time
+        holder.mClTime.setText(date.length != 2 ? "?": date[1]);
+        holder.mClDate.setText(date.length != 2 ? "?": date[0]);
     }
 
     @Override
@@ -50,8 +60,9 @@ public class CalendarNoteAdapter extends CursorAdapter<CalendarNoteAdapter.NoteV
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(viewGroup.getContext(), NoteDetailActivity.class);
-                intent.putExtra(NoteDetailActivity.NOTE_ID, viewHolder._id);
+
+                Intent intent = new Intent(viewGroup.getContext(), CalendarDetailActivity.class);
+                intent.putExtra(CalendarDetailActivity.CALENDAR_ID, viewHolder._id);
                 viewGroup.getContext().startActivity(intent);
             }
         });

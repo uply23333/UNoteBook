@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 
 /**
- * Created by yangtianrui on 16-5-23.
  * 提供数据,共loader更新数据
  */
 public class NoteProvider extends ContentProvider {

@@ -6,8 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 /**
- * Created by yangtianrui on 16-5-21.
- * <p/>
  * 关于notes数据的CRUD
  */
 public class NoteDao {
@@ -44,8 +42,6 @@ public class NoteDao {
                 selectionArgs, null, null, null, null);
         return c;
     }
-
-
 }
 
 
