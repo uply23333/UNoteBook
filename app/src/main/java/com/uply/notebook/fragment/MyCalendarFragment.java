@@ -1,5 +1,6 @@
 package com.uply.notebook.fragment;
 
+import android.app.AlarmManager;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -62,6 +63,7 @@ public class MyCalendarFragment extends Fragment implements LoaderManager.Loader
     private boolean initiated = false;
     private CalendarDao mCalendarDao;
     private Cursor mCursor;
+    private AlarmManager alarmManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -86,6 +88,7 @@ public class MyCalendarFragment extends Fragment implements LoaderManager.Loader
         mCursor = mCalendarDao.queryCalendar("notify_time like ?", new String[]{TextFormatUtil.formatDate(new Date()).substring(0, 10) + "%"});
         mAdapter = new CalendarNoteAdapter(context, mCursor);
         rvToDoList.setAdapter(mAdapter);
+        alarmManager = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
         initCurrentDate();
         initCalendarView();
         initToolbarClickListener();

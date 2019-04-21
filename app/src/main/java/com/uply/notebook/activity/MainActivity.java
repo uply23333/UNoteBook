@@ -26,6 +26,7 @@ import com.uply.notebook.fragment.AllNotesFragment;
 import com.uply.notebook.fragment.MyCalendarFragment;
 import com.uply.notebook.fragment.SearchNoteFragment;
 import com.uply.notebook.fragment.SettingFragment;
+import com.uply.notebook.service.AlarmService;
 import com.uply.notebook.util.JsonParser;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.RecognizerResult;
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity
         // 获取配置信息
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         IS_SYNC = pref.getBoolean("auto_sync", false);
+
         mUserName = ((UplyNoteBook)getApplication()).getUser().getUsername();
         mFragments[0] = new AllNotesFragment();
         mFragments[1] = new SearchNoteFragment();

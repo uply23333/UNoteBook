@@ -1,9 +1,13 @@
 package com.uply.notebook.activity;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -15,14 +19,15 @@ import android.widget.Toast;
 
 import com.bigkoo.pickerview.builder.TimePickerBuilder;
 import com.bigkoo.pickerview.listener.OnTimeSelectListener;
-import com.bigkoo.pickerview.view.TimePickerView;
 import com.uply.notebook.R;
 import com.uply.notebook.bean.Calendar;
-;
 import com.uply.notebook.db.CalendarDao;
+import com.uply.notebook.service.AlarmService;
+import com.uply.notebook.service.MyReceiver;
 import com.uply.notebook.util.TextFormatUtil;
 import com.uply.notebook.widget.LineEditText;
 
+import java.text.ParseException;
 import java.util.Date;
 
 
@@ -40,6 +45,7 @@ public class  CalendarDetailActivity extends AppCompatActivity implements View.O
     private Cursor mCursor;
     private Calendar mCalendar;
     private int mCalendarId = -1;
+    private AlarmManager alarmManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,6 +59,9 @@ public class  CalendarDetailActivity extends AppCompatActivity implements View.O
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         // 监听Back键,必须放在设置back键后面
         mToolbar.setNavigationOnClickListener(this);
+
+
+        alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         initData();
         initView();
     }
@@ -134,6 +143,11 @@ public class  CalendarDetailActivity extends AppCompatActivity implements View.O
             }
             if (rowID != -1) {
                 if (mCalendarId == -1) {
+                    try {
+                        addAlarm();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                     Toast.makeText(this, "添加成功", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(this, "修改成功", Toast.LENGTH_SHORT).show();
@@ -155,6 +169,39 @@ public class  CalendarDetailActivity extends AppCompatActivity implements View.O
                         .show();
         }else {
             onBackPressed();
+        }
+    }
+
+    private void addAlarm() throws ParseException {
+
+        Intent alarmIntent = new Intent(getApplicationContext(), MyReceiver.class);
+        PendingIntent operation = PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        java.util.Calendar calendar= java.util.Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+
+
+        registerOneTimeAlarm(operation, calendar.getTimeInMillis());
+//        Intent intent = new Intent(this, AlarmService.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        intent.setAction("NOTIFICATION");
+//        PendingIntent pi = PendingIntent.getService(this, 0, intent, 0);
+//        int type = AlarmManager.RTC_WAKEUP;
+//        //new Date()：表示当前日期，可以根据项目需求替换成所求日期
+//        //getTime()：日期的该方法同样可以表示从1970年1月1日0点至今所经历的毫秒数
+//        long triggerAtMillis = TextFormatUtil.parseText(mEtime.getText().toString()).getTime();
+//        alarmManager.set(type, triggerAtMillis, pi);
+
+    }
+
+    private void registerOneTimeAlarm(PendingIntent alarmIntent, long when) {
+        int SDK_INT = Build.VERSION.SDK_INT;
+        if (SDK_INT < Build.VERSION_CODES.KITKAT) {
+            alarmManager.set(AlarmManager.RTC_WAKEUP, when, alarmIntent);
+        } else if (Build.VERSION_CODES.KITKAT <= SDK_INT && SDK_INT < Build.VERSION_CODES.M) {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, when, alarmIntent);
+        } else if (SDK_INT >= Build.VERSION_CODES.M) {
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, when, alarmIntent);
         }
     }
 }
