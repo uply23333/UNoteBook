@@ -70,6 +70,9 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         IS_SYNC = pref.getBoolean("auto_sync", false);
 
+        Intent intent = new Intent(this.getApplicationContext(), AlarmService.class);
+        startService(intent);
+
         mUserName = ((UplyNoteBook)getApplication()).getUser().getUsername();
         mFragments[0] = new AllNotesFragment();
         mFragments[1] = new SearchNoteFragment();

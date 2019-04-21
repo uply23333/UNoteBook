@@ -174,24 +174,20 @@ public class  CalendarDetailActivity extends AppCompatActivity implements View.O
 
     private void addAlarm() throws ParseException {
 
-        Intent alarmIntent = new Intent(getApplicationContext(), MyReceiver.class);
-        PendingIntent operation = PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        java.util.Calendar calendar= java.util.Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-
-
-        registerOneTimeAlarm(operation, calendar.getTimeInMillis());
-//        Intent intent = new Intent(this, AlarmService.class);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//        intent.setAction("NOTIFICATION");
-//        PendingIntent pi = PendingIntent.getService(this, 0, intent, 0);
-//        int type = AlarmManager.RTC_WAKEUP;
-//        //new Date()：表示当前日期，可以根据项目需求替换成所求日期
-//        //getTime()：日期的该方法同样可以表示从1970年1月1日0点至今所经历的毫秒数
-//        long triggerAtMillis = TextFormatUtil.parseText(mEtime.getText().toString()).getTime();
-//        alarmManager.set(type, triggerAtMillis, pi);
-
+//        Intent alarmIntent = new Intent(getApplicationContext(), MyReceiver.class);
+//        PendingIntent operation = PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//        java.util.Calendar calendar= java.util.Calendar.getInstance();
+//        calendar.setTimeInMillis(System.currentTimeMillis());
+//        registerOneTimeAlarm(operation, calendar.getTimeInMillis());
+        Intent intent = new Intent(this, AlarmService.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setAction("NOTIFICATION");
+        PendingIntent pi = PendingIntent.getService(getApplicationContext(), 0, intent, 0);
+        int type = AlarmManager.RTC_WAKEUP;
+        //new Date()：表示当前日期，可以根据项目需求替换成所求日期
+        //getTime()：日期的该方法同样可以表示从1970年1月1日0点至今所经历的毫秒数
+        long triggerAtMillis = TextFormatUtil.parseText(mEtime.getText().toString()).getTime();
+        alarmManager.set(type, triggerAtMillis, pi);
     }
 
     private void registerOneTimeAlarm(PendingIntent alarmIntent, long when) {
