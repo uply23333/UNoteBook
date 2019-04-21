@@ -42,6 +42,10 @@
             android:authorities="com.terry.NoteBook" />
 
         <provider
+            android:name=".db.CalendarProvider"
+            android:authorities="com.terry.Calendar" />
+
+        <provider
             android:name="cn.bmob.v3.util.BmobContentProvider"
             android:authorities="com.uply.notebook.BmobContentProvider">
         </provider>

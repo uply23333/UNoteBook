@@ -43,7 +43,7 @@ public class CalendarNoteAdapter extends CursorAdapter<CalendarNoteAdapter.NoteV
     public void onBindViewHolder(NoteViewHolder holder, Cursor cursor) {
         holder.mClTitle.setText(cursor.getString(cursor.getColumnIndex("title")));
         holder._id = cursor.getInt(cursor.getColumnIndex("_id"));
-        String [] date = cursor.getString(cursor.getColumnIndex("create_time")).split(" ");//notify_time
+        String [] date = cursor.getString(cursor.getColumnIndex("notify_time")).split(" ");//notify_time
         holder.mClTime.setText(date.length != 2 ? "?": date[1]);
         holder.mClDate.setText(date.length != 2 ? "?": date[0]);
     }

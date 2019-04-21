@@ -26,7 +26,7 @@ import com.uply.notebook.widget.LineEditText;
 import java.util.Date;
 
 
-public class CalendarDetailActivity extends AppCompatActivity implements View.OnClickListener {
+public class  CalendarDetailActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final String CALENDAR_ID = "calendar_id";
     public static final String SPEECH_CONTENT = "SPEECH_CONTENT";
@@ -77,7 +77,7 @@ public class CalendarDetailActivity extends AppCompatActivity implements View.On
                 mCalendar.setContent(content);
             }
             String notifyTime = intent.getStringExtra(TIME_CONTENT);
-            if (content != null) {
+            if (notifyTime != null) {
                 mCalendar.setNotifyTime(notifyTime);
             }
         }
@@ -138,8 +138,7 @@ public class CalendarDetailActivity extends AppCompatActivity implements View.On
                 } else {
                     Toast.makeText(this, "修改成功", Toast.LENGTH_SHORT).show();
                 }
-//                getContentResolver().notifyChange(Uri.parse("content://com.terry.Calendar"), null);
-                // TODO: 2019/4/19 添加calendar的content
+                getContentResolver().notifyChange(Uri.parse("content://com.terry.Calendar"), null);
                 finish();
             }
         } if (v.getId() == R.id.id_et_time) {

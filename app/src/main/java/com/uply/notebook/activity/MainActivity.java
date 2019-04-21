@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity
     private View mHeaderView;
 
     private Fragment mFragments[] = new Fragment[4];
+    private boolean isCalendarFragment = false;
 
     private String mUserName;
     private long curTimeMills;
@@ -126,6 +127,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.id_menu_add_note_auto:
+
                 RecognizerDialog mDialog = new RecognizerDialog(this, new InitListener() {
                     @Override
                     public void onInit(int i) {
@@ -140,7 +142,7 @@ public class MainActivity extends AppCompatActivity
                             contents.add(JsonParser.parseIatResult(recognizerResult.getResultString()));
                         }
                         if (b) { // 录音结束
-                            Intent intent = new Intent(MainActivity.this, NoteDetailActivity.class);
+                            Intent intent = new Intent(MainActivity.this, isCalendarFragment? CalendarDetailActivity.class: NoteDetailActivity.class);
                             StringBuilder stringBuilder = new StringBuilder();
                             for (String str: contents) {
                                 stringBuilder.append(str + "\n");
@@ -159,7 +161,7 @@ public class MainActivity extends AppCompatActivity
                 mDialog.show();
                 break;
             case R.id.id_menu_add_note:
-                Intent intent = new Intent(this, NoteDetailActivity.class);
+                Intent intent = new Intent(this, isCalendarFragment? CalendarDetailActivity.class: NoteDetailActivity.class);
                 startActivity(intent);
                 break;
         }
@@ -185,15 +187,19 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         switch (id) {
             case R.id.nav_all_notes:
+                isCalendarFragment = false;
                 showFragment(mFragments[0]);
                 break;
             case R.id.nav_search:
+                isCalendarFragment = false;
                 showFragment(mFragments[1]);
                 break;
             case R.id.nav_setting:
+                isCalendarFragment = false;
                 showFragment(mFragments[2]);
                 break;
             case R.id.nav_calendar:
+                isCalendarFragment = true;
                 showFragment(mFragments[3]);
                 break;
             case R.id.nav_logout:

@@ -1,13 +1,15 @@
 package com.uply.notebook.fragment;
 
+import android.app.LoaderManager;
 import android.content.Context;
-import android.content.Intent;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.ViewPager;
-import android.support.v7.recyclerview.extensions.ListAdapter;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -19,7 +21,8 @@ import android.widget.TextView;
 import com.ldf.calendar.Utils;
 import com.uply.notebook.R;
 import com.uply.notebook.adapter.CalendarNoteAdapter;
-import com.uply.notebook.db.NoteDao;
+import com.uply.notebook.db.CalendarDao;
+import com.uply.notebook.util.TextFormatUtil;
 import com.uply.notebook.widget.CustomDayView;
 import com.ldf.calendar.component.CalendarAttr;
 import com.ldf.calendar.component.CalendarViewAdapter;
@@ -29,12 +32,14 @@ import com.ldf.calendar.view.Calendar;
 import com.ldf.calendar.view.MonthPager;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 
-public class MyCalendarFragment extends Fragment {
+public class MyCalendarFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = "MyCalendarFragment";
+    private static String ADD_CALENDAR_SUCCESS = "ADD_CALENDAR_SUCCESS";
 
     private View root;
     private TextView tvYear;
@@ -48,13 +53,14 @@ public class MyCalendarFragment extends Fragment {
     private TextView lastMonthBtn;
 
     private ArrayList<Calendar> currentCalendars = new ArrayList<>();
+    private CalendarNoteAdapter mAdapter;
     private OnSelectDateListener onSelectDateListener;
     private CalendarViewAdapter calendarAdapter;
     private int mCurrentPage = MonthPager.CURRENT_DAY_INDEX;
     private Context context;
     private CalendarDate currentDate;
     private boolean initiated = false;
-    private NoteDao mNoteDao;
+    private CalendarDao mCalendarDao;
     private Cursor mCursor;
 
     @Override
@@ -75,10 +81,11 @@ public class MyCalendarFragment extends Fragment {
         rvToDoList.setHasFixedSize(true);
         //这里用线性显示 类似于listview
         rvToDoList.setLayoutManager(new LinearLayoutManager(context));
-        mNoteDao = new NoteDao(getActivity());
+        mCalendarDao = new CalendarDao(getActivity());
         // 查询所有行
-        mCursor = mNoteDao.queryNote(null, null);
-        rvToDoList.setAdapter(new CalendarNoteAdapter(context, mCursor));
+        mCursor = mCalendarDao.queryCalendar("notify_time like ?", new String[]{TextFormatUtil.formatDate(new Date()).substring(0, 10) + "%"});
+        mAdapter = new CalendarNoteAdapter(context, mCursor);
+        rvToDoList.setAdapter(mAdapter);
         initCurrentDate();
         initCalendarView();
         initToolbarClickListener();
@@ -100,6 +107,42 @@ public class MyCalendarFragment extends Fragment {
 //            initiated = true;
 //            initiated = true;
 //        }
+    }
+
+    /**
+     * 此时重启Loader机制更新数据
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        mCursor = mCalendarDao.queryCalendar(null, null);
+        mCursor = mCalendarDao.queryCalendar("notify_time like ?",
+                new String[]{addZero(currentDate.getYear()) + "-" + addZero(currentDate.getMonth()) + "-" + addZero(currentDate.getDay()) +"%"});
+        getLoaderManager().restartLoader(0, null, this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mCursor.close();
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Uri uri = Uri.parse("content://com.terry.Calendar");
+        return new CursorLoader(getActivity(), uri, null, "notify_time like ?",
+                new String[]{addZero(currentDate.getYear()) + "-" + addZero(currentDate.getMonth()) + "-" + addZero(currentDate.getDay()) +"%"}, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mAdapter.swapCursor(data);
+        initMarkData();
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mAdapter.swapCursor(null);
     }
 
     private void onClickBackToDayBtn() {
@@ -178,10 +221,15 @@ public class MyCalendarFragment extends Fragment {
 
     private void initMarkData() {
         Log.d(TAG, "initMarkData: ");
+        Cursor cursor = mCalendarDao.queryCalendar(null, null);
         HashMap markData = new HashMap<>();
-        //1表示红点，0表示灰点
-        markData.put("2019-4-16", "1");
-        markData.put("2019-4-15", "0");
+        while (cursor.moveToNext()) {
+            String [] date = cursor.getString(cursor.getColumnIndex("notify_time")).split(" ");
+            if (date.length == 2) {
+                markData.put(subZero(date[0]), "1");
+            }
+        }
+        Log.d(TAG, "initMarkData: " + markData.size());
         calendarAdapter.setMarkData(markData);
     }
 
@@ -208,6 +256,7 @@ public class MyCalendarFragment extends Fragment {
                 if (currentCalendars.get(position % currentCalendars.size()) != null) {
                     CalendarDate date = currentCalendars.get(position % currentCalendars.size()).getSeedDate();
                     currentDate = date;
+                    Log.i(TAG, "onPageSelected: ");
 //                    tvYear.setText(date.getYear() + "年");
 //                    tvMonth.setText(date.getMonth() + "");
                 }
@@ -225,6 +274,8 @@ public class MyCalendarFragment extends Fragment {
             @Override
             public void onSelectDate(CalendarDate date) {
                 //your code
+                Log.i(TAG, "onSelectDate: ");
+                currentDate = date;
                 refreshMonthPager(date);
             }
 
@@ -249,5 +300,44 @@ public class MyCalendarFragment extends Fragment {
         tvYear.setText(date.getYear() + "年");
         tvMonth.setText(date.getMonth() + "月");
         tvDay.setText(date.getDay() + "日");
+        mCursor = mCalendarDao.queryCalendar("notify_time like ?",
+                new String[]{addZero(date.getYear()) + "-" + addZero(date.getMonth()) + "-" + addZero(date.getDay()) +"%"});
+        mAdapter.swapCursor(mCursor);
     }
+
+    private String addZero(int number) {
+        if (number < 10) {
+            return "0" + number;
+        } else {
+            return "" + number;
+        }
+    }
+
+    private String subZero(String number) {
+        String[] arr = number.split("-");
+        if (arr.length != 3) {
+            return null;
+        }
+        if (arr[1].charAt(0) == '0') {
+            arr[1] = arr[1].substring(1);
+        }
+        if (arr[2].charAt(0) == '0') {
+            arr[2] = arr[2].substring(1);
+        }
+        return arr[0] + "-" + arr[1] + "-" + arr[2];
+    }
+
+
+//    public class AddCalTaskReceiver extends BroadcastReceiver {
+//
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            String action = intent.getAction();
+//            if (action.equals(MyCalendarFragment.ADD_CALENDAR_SUCCESS)) {
+//                //更新日历上的标记数据
+//                initMarkData();
+//            }
+//        }
+//
+//    }
 }
