@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity
     private long curTimeMills;
 
     // 是否启动Service执行计划任务
-    public static boolean IS_SYNC = false;
+    public static boolean IS_SYNC = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity
 
         // 获取配置信息
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        IS_SYNC = pref.getBoolean("auto_sync", false);
+        IS_SYNC = pref.getBoolean("auto_sync", true);
 
         Intent intent = new Intent(this.getApplicationContext(), AlarmService.class);
         startService(intent);

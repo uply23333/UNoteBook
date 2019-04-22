@@ -8,7 +8,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
+import com.uply.notebook.bean.Calendar;
 import com.uply.notebook.bean.Note;
 import com.uply.notebook.config.Constants;
 
@@ -31,9 +33,12 @@ import cn.bmob.v3.listener.QueryListListener;
  */
 public class AutoSyncService extends Service {
 
+    private static final String TAG = "AutoSyncService";
+
     private List<BmobObject> mNotes = new ArrayList<>();
     private Timer mTimer = new Timer();
     private Uri mUri = Uri.parse("content://com.terry.NoteBook");
+    private Uri cUri = Uri.parse("content://com.terry.Calendar");
     private ContentResolver mResolver;
 
     public static final String SEND_SYNC_STATE = "STATE";
@@ -53,7 +58,7 @@ public class AutoSyncService extends Service {
         super.onCreate();
         mResolver = getContentResolver();
         TimerTask task = new SyncTask();
-        mTimer.schedule(task, 5000, 5 * 60 * 1000); // 五分钟更新一次
+        mTimer.schedule(task, 5000, 1 * 30 * 1000); // 30s更新一次
 //        mTimer.schedule(task, 30000);
     }
 
@@ -62,8 +67,11 @@ public class AutoSyncService extends Service {
 
         @Override
         public void run() {
+            Log.d(TAG, "run: ");
             mNotes.clear();
             Cursor cursor = mResolver.query(mUri, null
+                    , "is_sync = ?", new String[]{"false"}, null);
+            Cursor cursor1 = mResolver.query(cUri, null
                     , "is_sync = ?", new String[]{"false"}, null);
             if (cursor != null) {
                 while (cursor.moveToNext()) {
@@ -80,6 +88,48 @@ public class AutoSyncService extends Service {
                     mResolver.update(mUri, values, "_id=?", new String[]{noteID + ""});
                 }
                 cursor.close();
+                // 向服务器发送数据
+                new BmobBatch().insertBatch(mNotes).doBatch(new QueryListListener<BatchResult>() {
+                    @Override
+                    public void done(List<BatchResult> list, BmobException e) {
+                        if (e == null) {
+                            int count = 0;
+                            for (int i = 0; i < list.size(); i++) {
+                                BatchResult result = list.get(i);
+                                BmobException ex = result.getError();
+                                if (ex != null) {
+                                    count++;
+                                }
+                            }
+                            Intent intent = new Intent();
+                            intent.setAction(Constants.SYNC_BROADCAST_ACTION);
+                            intent.putExtra(SEND_SYNC_STATE, "更新成功" + count + "条");
+                            sendBroadcast(intent);
+                        } else {
+                            Intent intent = new Intent();
+                            intent.setAction(Constants.SYNC_BROADCAST_ACTION);
+                            intent.putExtra(SEND_SYNC_STATE, "失败：" + e.getMessage() + "," + e.getErrorCode());
+                            sendBroadcast(intent);
+                        }
+                    }
+                });
+            }
+            mNotes.clear();
+            if (cursor1 != null) {
+                while (cursor1.moveToNext()) {
+                    Calendar calendar = new Calendar();
+                    int noteID = cursor1.getInt(0);
+                    calendar.setTitle(cursor1.getString(cursor1.getColumnIndex("title")));
+                    calendar.setContent(cursor1.getString(cursor1.getColumnIndex("content")));
+                    calendar.setNotifyTime(cursor1.getString(cursor1.getColumnIndex("notify_time")));
+                    calendar.setUserName(BmobUser.getCurrentUser(BmobUser.class).getUsername());
+                    mNotes.add(calendar);
+                    // 标记为已同步
+                    ContentValues values = new ContentValues();
+                    values.put("is_sync", "true");
+                    mResolver.update(cUri, values, "_id=?", new String[]{noteID + ""});
+                }
+                cursor1.close();
                 // 向服务器发送数据
                 new BmobBatch().insertBatch(mNotes).doBatch(new QueryListListener<BatchResult>() {
                     @Override

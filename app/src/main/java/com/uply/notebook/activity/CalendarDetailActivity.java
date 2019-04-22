@@ -23,7 +23,6 @@ import com.uply.notebook.R;
 import com.uply.notebook.bean.Calendar;
 import com.uply.notebook.db.CalendarDao;
 import com.uply.notebook.service.AlarmService;
-import com.uply.notebook.service.MyReceiver;
 import com.uply.notebook.util.TextFormatUtil;
 import com.uply.notebook.widget.LineEditText;
 
@@ -79,6 +78,7 @@ public class  CalendarDetailActivity extends AppCompatActivity implements View.O
                 mCalendar.setTitle(mCursor.getString(mCursor.getColumnIndex("title")));
                 mCalendar.setContent(mCursor.getString(mCursor.getColumnIndex("content")));
                 mCalendar.setNotifyTime(mCursor.getString(mCursor.getColumnIndex("notify_time")));
+                mCalendar.setIsSync((mCursor.getString(mCursor.getColumnIndex("is_sync"))));
             }
         } else {
             String content = intent.getStringExtra(SPEECH_CONTENT);
@@ -133,7 +133,7 @@ public class  CalendarDetailActivity extends AppCompatActivity implements View.O
             values.put("title", title);
             values.put("content", content);
             values.put("notify_time", notifyTime);
-            values.put("is_sync", mCalendar.isSync());
+            values.put("is_sync", mCalendar.getIsSync());
             int rowID;
             // 向数据库添加或者更新已有记录
             if (mCalendarId == -1) {

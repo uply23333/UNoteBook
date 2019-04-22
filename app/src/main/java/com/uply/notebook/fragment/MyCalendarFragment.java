@@ -2,6 +2,8 @@ package com.uply.notebook.fragment;
 
 import android.app.AlarmManager;
 import android.app.LoaderManager;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
@@ -10,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +25,7 @@ import android.widget.TextView;
 import com.ldf.calendar.Utils;
 import com.uply.notebook.R;
 import com.uply.notebook.adapter.CalendarNoteAdapter;
+import com.uply.notebook.bean.Note;
 import com.uply.notebook.db.CalendarDao;
 import com.uply.notebook.util.TextFormatUtil;
 import com.uply.notebook.widget.CustomDayView;
@@ -35,6 +39,14 @@ import com.ldf.calendar.view.MonthPager;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
 
 
 public class MyCalendarFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -64,6 +76,7 @@ public class MyCalendarFragment extends Fragment implements LoaderManager.Loader
     private CalendarDao mCalendarDao;
     private Cursor mCursor;
     private AlarmManager alarmManager;
+    final Uri uri = Uri.parse("content://com.terry.Calendar");
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -84,6 +97,7 @@ public class MyCalendarFragment extends Fragment implements LoaderManager.Loader
         //这里用线性显示 类似于listview
         rvToDoList.setLayoutManager(new LinearLayoutManager(context));
         mCalendarDao = new CalendarDao(getActivity());
+        getRemoteData();
         // 查询所有行
         mCursor = mCalendarDao.queryCalendar("notify_time like ?", new String[]{TextFormatUtil.formatDate(new Date()).substring(0, 10) + "%"});
         mAdapter = new CalendarNoteAdapter(context, mCursor);
@@ -223,7 +237,6 @@ public class MyCalendarFragment extends Fragment implements LoaderManager.Loader
     }
 
     private void initMarkData() {
-        Log.d(TAG, "initMarkData: ");
         Cursor cursor = mCalendarDao.queryCalendar(null, null);
         HashMap markData = new HashMap<>();
         while (cursor.moveToNext()) {
@@ -234,6 +247,47 @@ public class MyCalendarFragment extends Fragment implements LoaderManager.Loader
         }
         Log.d(TAG, "initMarkData: " + markData.size());
         calendarAdapter.setMarkData(markData);
+    }
+
+
+    private void getRemoteData() {
+        Cursor cursor = mCalendarDao.queryCalendar(null, null);
+        final Set<com.uply.notebook.bean.Calendar> calendarSet = new HashSet<>();
+
+        while (cursor.moveToNext()) {
+            String notifyTime = cursor.getString(cursor.getColumnIndex("notify_time"));
+            String title = cursor.getString(cursor.getColumnIndex("title"));
+            String content = cursor.getString(cursor.getColumnIndex("content"));
+            calendarSet.add(new com.uply.notebook.bean.Calendar(title, content, notifyTime));
+        }
+        BmobQuery<com.uply.notebook.bean.Calendar> bmobQuery = new BmobQuery<>();
+        bmobQuery.addWhereEqualTo("userName", BmobUser.getCurrentUser(BmobUser.class).getUsername());
+        bmobQuery.setLimit(50); // 返回50条数据
+        // 从服务器获取数据
+        bmobQuery.findObjects(new FindListener<com.uply.notebook.bean.Calendar>() {
+            @Override
+            public void done(List<com.uply.notebook.bean.Calendar> list, BmobException e) {
+                if (e == null) {
+                    // 获取所有没有在服务器中的数据
+                    list.removeAll(calendarSet);
+                    ContentResolver resolver = getActivity().getContentResolver();
+                    // 将此数据写入数据库中
+                    for (com.uply.notebook.bean.Calendar note : list) {
+                        ContentValues values = new ContentValues();
+                        values.put("title", note.getTitle());
+                        values.put("content", note.getContent());
+                        values.put("notify_time", note.getNotifyTime());
+                        values.put("is_sync", "true");
+                        resolver.insert(uri, values);
+                    }
+                    resolver.notifyChange(uri, null);
+                    // 通知UI更新界面
+                    Snackbar.make(root, "同步完成", Snackbar.LENGTH_SHORT).show();
+                } else {
+                    Snackbar.make(root, e.getErrorCode() + "," + e.getMessage(), Snackbar.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private void initMonthPager() {

@@ -16,7 +16,7 @@ public class Note extends BmobObject {
 
     // 辅助属性
     private String userName;
-    private boolean isSync = false; // 标志该Note是否已经同步
+    private String isSync; // 标志该Note是否已经同步
 
     public Note(String title, String content, String createTime) {
         this.title = title;
@@ -59,11 +59,11 @@ public class Note extends BmobObject {
         this.userName = userName;
     }
 
-    public boolean isSync() {
+    public String getIsSync() {
         return isSync;
     }
 
-    public void setIsSync(boolean isSync) {
+    public void setIsSync(String isSync) {
         this.isSync = isSync;
     }
 

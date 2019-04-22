@@ -108,7 +108,7 @@ public class NoteDetailActivity extends AppCompatActivity implements View.OnClic
             values.put("title", title);
             values.put("content", content);
             values.put("create_time", TextFormatUtil.formatDate(new Date()));
-            values.put("is_sync", mNote.isSync());
+            values.put("is_sync", mNote.getIsSync());
             int rowID;
             // 向数据库添加或者更新已有记录
             if (mNoteID == -1) {

@@ -11,7 +11,7 @@ public class Calendar extends BmobObject {
 
     // 辅助属性
     private String userName;
-    private boolean isSync = false; // 标志该Note是否已经同步
+    private String isSync = "false"; // 标志该Note是否已经同步
 
     public Calendar(String title, String content, String notifyTime) {
         this.title = title;
@@ -54,11 +54,11 @@ public class Calendar extends BmobObject {
         this.userName = userName;
     }
 
-    public boolean isSync() {
+    public String getIsSync() {
         return isSync;
     }
 
-    public void setIsSync(boolean isSync) {
+    public void setIsSync(String isSync) {
         this.isSync = isSync;
     }
 
