@@ -139,6 +139,7 @@ public class MainActivity extends AppCompatActivity
 
                     }
                 });
+
                 final List<String> contents = new ArrayList<>();
                 mDialog.setListener( new RecognizerDialogListener() {
                     @Override
@@ -164,6 +165,10 @@ public class MainActivity extends AppCompatActivity
                 });
 
                 mDialog.show();
+
+
+                TextView txt = mDialog.getWindow().getDecorView().findViewWithTag("textlink");
+                txt.setText("");
                 break;
             case R.id.id_menu_add_note:
                 Intent intent = new Intent(this, isCalendarFragment? CalendarDetailActivity.class: NoteDetailActivity.class);

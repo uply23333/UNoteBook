@@ -10,5 +10,6 @@
 
     <string name="AddNote">添加</string>
     <string name="ModifyNote">修改</string>
+    <string name="DeleteNote">删除</string>
     <string name="NoteDetail">Node Detail</string>
 </resources>

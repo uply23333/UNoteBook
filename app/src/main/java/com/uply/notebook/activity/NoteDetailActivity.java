@@ -27,6 +27,7 @@ public class NoteDetailActivity extends AppCompatActivity implements View.OnClic
     private EditText mEtTitle;
     private LineEditText mEtContent;
     private Button mBtnModify;
+    private Button mBtnDelete;
     private Toolbar mToolbar;
     private NoteDao mNoteDao;
     private Cursor mCursor;
@@ -62,6 +63,7 @@ public class NoteDetailActivity extends AppCompatActivity implements View.OnClic
                 mNote.setTitle(mCursor.getString(mCursor.getColumnIndex("title")));
                 mNote.setContent(mCursor.getString(mCursor.getColumnIndex("content")));
                 mNote.setCreateTime(mCursor.getString(mCursor.getColumnIndex("create_time")));
+                mNote.setIsSync(mCursor.getString(mCursor.getColumnIndex("is_sync")));
             }
         } else {
             String content = intent.getStringExtra("SPEECH_CONTENT");
@@ -81,12 +83,12 @@ public class NoteDetailActivity extends AppCompatActivity implements View.OnClic
         mEtTitle = findViewById(R.id.id_et_title);
         mEtContent = findViewById(R.id.id_et_content);
         mBtnModify = findViewById(R.id.id_btn_modify);
+        mBtnDelete = findViewById(R.id.id_btn_delete);
         mEtTitle.setText(mNote.getTitle());
         mEtContent.setText(mNote.getContent());
         mBtnModify.setOnClickListener(this);
-        Intent intent = getIntent();
-        boolean isUpdate = intent.getBooleanExtra("IS_UPDATE", false);
-        if (isUpdate) {
+        mBtnDelete.setOnClickListener(this);
+        if (mNoteID != -1) {
             mBtnModify.setText(R.string.ModifyNote);
         }
     }
@@ -125,6 +127,16 @@ public class NoteDetailActivity extends AppCompatActivity implements View.OnClic
                 getContentResolver().notifyChange(Uri.parse("content://com.terry.NoteBook"), null);
                 finish();
             }
+        } else if (v.getId() == R.id.id_btn_delete){
+            int result;
+            if (mNoteID != -1) {
+                result = mNoteDao.deleteNote("_id=?", new String[]{mNoteID + ""});
+                if (result != -1) {
+                    Toast.makeText(this, "删除成功", Toast.LENGTH_SHORT).show();
+                    getContentResolver().notifyChange(Uri.parse("content://com.terry.Calendar"), null);
+                }
+            }
+            finish();
         } else {
             onBackPressed();
         }

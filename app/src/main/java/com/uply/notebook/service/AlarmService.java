@@ -13,6 +13,7 @@ import android.util.Log;
 
 import com.uply.notebook.R;
 import com.uply.notebook.activity.MainActivity;
+import com.uply.notebook.bean.Calendar;
 
 public class AlarmService extends Service {
 
@@ -49,6 +50,9 @@ public class AlarmService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand: ");
         if (intent != null && "NOTIFICATION".equals(intent.getAction())) {
+            final Calendar calendar = (Calendar)intent.getSerializableExtra("calendar");
+            Log.d(TAG, "onStartCommand: title" + calendar.getTitle());
+            Log.d(TAG, "onStartCommand: notifytime" + calendar.getNotifyTime());
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -60,7 +64,7 @@ public class AlarmService extends Service {
                     builder3.setContentIntent(pendingIntent);
                     builder3.setSmallIcon(R.mipmap.ic_launcher);
                     builder3.setLargeIcon(BitmapFactory.decodeResource(AlarmService.this.getResources(), R.mipmap.ic_launcher));
-                    builder3.setContentTitle("悬挂通知");
+                    builder3.setContentTitle(calendar.getTitle());
 
                     Intent XuanIntent = new Intent();
                     XuanIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

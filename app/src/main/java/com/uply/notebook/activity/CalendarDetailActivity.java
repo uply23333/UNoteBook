@@ -39,6 +39,7 @@ public class  CalendarDetailActivity extends AppCompatActivity implements View.O
     private TextView mEtime;
     private LineEditText mEtContent;
     private Button mBtnModify;
+    private Button mBtnDelete;
     private Toolbar mToolbar;
     private CalendarDao calendarDao;
     private Cursor mCursor;
@@ -103,14 +104,14 @@ public class  CalendarDetailActivity extends AppCompatActivity implements View.O
         mEtContent = findViewById(R.id.id_et_content);
         mEtime = findViewById(R.id.id_et_time);
         mBtnModify = findViewById(R.id.id_btn_modify);
+        mBtnDelete = findViewById(R.id.id_btn_delete);
         mEtTitle.setText(mCalendar.getTitle());
         mEtime.setText(!mCalendar.getNotifyTime().equals("")? mCalendar.getNotifyTime(): TextFormatUtil.formatDate(new Date()));
         mEtime.setOnClickListener(this);
         mEtContent.setText(mCalendar.getContent());
         mBtnModify.setOnClickListener(this);
-        Intent intent = getIntent();
-        boolean isUpdate = intent.getBooleanExtra("IS_UPDATE", false);
-        if (isUpdate) {
+        mBtnDelete.setOnClickListener(this);
+        if (mCalendarId != -1) {
             mBtnModify.setText(R.string.ModifyNote);
         }
     }
@@ -129,6 +130,9 @@ public class  CalendarDetailActivity extends AppCompatActivity implements View.O
             String title = mEtTitle.getText().toString();
             String content = mEtContent.getText().toString();
             String notifyTime = mEtime.getText().toString();
+            mCalendar.setTitle(title);
+            mCalendar.setContent(content);
+            mCalendar.setNotifyTime(notifyTime);
             ContentValues values = new ContentValues();
             values.put("title", title);
             values.put("content", content);
@@ -155,7 +159,7 @@ public class  CalendarDetailActivity extends AppCompatActivity implements View.O
                 getContentResolver().notifyChange(Uri.parse("content://com.terry.Calendar"), null);
                 finish();
             }
-        } if (v.getId() == R.id.id_et_time) {
+        } else if (v.getId() == R.id.id_et_time) {
             //时间选择器
                 new TimePickerBuilder(CalendarDetailActivity.this, new OnTimeSelectListener() {
                     @Override
@@ -167,20 +171,26 @@ public class  CalendarDetailActivity extends AppCompatActivity implements View.O
                         .setType(new boolean[]{true, true, true, true, true, false})
                         .build()
                         .show();
-        }else {
+        } else if (v.getId() == R.id.id_btn_delete){
+            int result;
+            if (mCalendarId == -1) {
+                result = calendarDao.deleteCalendar("_id=?", new String[]{mCalendarId + ""});
+                if (result != -1) {
+                    Toast.makeText(this, "删除成功", Toast.LENGTH_SHORT).show();
+                    getContentResolver().notifyChange(Uri.parse("content://com.terry.Calendar"), null);
+                }
+            }
+            finish();
+        } else {
             onBackPressed();
         }
+
     }
 
     private void addAlarm() throws ParseException {
-
-//        Intent alarmIntent = new Intent(getApplicationContext(), MyReceiver.class);
-//        PendingIntent operation = PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-//        java.util.Calendar calendar= java.util.Calendar.getInstance();
-//        calendar.setTimeInMillis(System.currentTimeMillis());
-//        registerOneTimeAlarm(operation, calendar.getTimeInMillis());
         Intent intent = new Intent(this, AlarmService.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra("calendar", mCalendar);
         intent.setAction("NOTIFICATION");
         PendingIntent pi = PendingIntent.getService(getApplicationContext(), 0, intent, 0);
         int type = AlarmManager.RTC_WAKEUP;

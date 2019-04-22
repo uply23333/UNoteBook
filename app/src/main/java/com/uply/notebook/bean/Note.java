@@ -16,7 +16,7 @@ public class Note extends BmobObject {
 
     // 辅助属性
     private String userName;
-    private String isSync; // 标志该Note是否已经同步
+    private String isSync = "false"; // 标志该Note是否已经同步
 
     public Note(String title, String content, String createTime) {
         this.title = title;
